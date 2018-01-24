@@ -1,0 +1,9 @@
+# ARCHIVO .gitignore DE PTManual
+
+# Carpeta de LaTeX
+PTManual.aux
+PTManual.log
+PTManual.pdf
+PTManual.run.xml
+PTManual.synctex.gz
+
