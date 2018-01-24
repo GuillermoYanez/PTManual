@@ -35,6 +35,8 @@
 
 \usepackage{lastpage} % Used to determine the number of pages in the document (for "Page X of Total")
 
+\usepackage{hyperref}
+
 \usepackage{graphicx} % Required for adding images
 
 % PONER EL PAQUETE DE HIPERVÍNCULOS
@@ -44,6 +46,16 @@
 
 \usepackage{sectsty} % Enables custom section titles
 \allsectionsfont{\usefont{OT1}{phv}{b}{n}} % Change the font of all section commands (Helvetica)
+
+%----------------------------------------------------------------------------------------
+%	DEFINITIONS
+%----------------------------------------------------------------------------------------
+
+\graphicspath{
+    {.} % document root dir
+    {images/}
+}
+
 
 %----------------------------------------------------------------------------------------
 %	MARGINS AND SPACING
@@ -105,19 +117,22 @@
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\newcommand{\authorstyle}[1]{{\large\usefont{OT1}{phv}{b}{n}\color{DarkRed}#1}} % Authors style (Helvetica)
+\definecolor{BlueGiD}{cmyk}{0.77,0.17,0.15,0.0}
+\definecolor{GrayGiD}{cmyk}{0.82,0.69,0.55,0.59}
+
+\newcommand{\authorstyle}[1]{{\large\usefont{OT1}{phv}{b}{n}\color{GrayGiD}#1}} % Authors style (Helvetica)
 
 \newcommand{\institution}[1]{{\footnotesize\usefont{OT1}{phv}{m}{sl}\color{Black}#1}} % Institutions style (Helvetica)
 
 \usepackage{titling} % Allows custom title configuration
 
-\newcommand{\HorRule}{\color{DarkGoldenrod}\rule{\linewidth}{1pt}} % Defines the gold horizontal rule around the title
+\newcommand{\HorRule}{\color{BlueGiD}\rule{\linewidth}{1pt}} % Defines the gold horizontal rule around the title
 
 \pretitle{
 	\vspace{-30pt} % Move the entire title section up
 	\HorRule\vspace{10pt} % Horizontal rule before the title
 	\fontsize{32}{36}\usefont{OT1}{phv}{b}{n}\selectfont % Helvetica
-	\color{DarkRed} % Text colour for the title and author(s)
+	\color{GrayGiD} % Text colour for the title and author(s)
 }
 
 \posttitle{\par\vskip 15pt} % Whitespace under the title
@@ -139,7 +154,7 @@
 
 \newcommand{\initial}[1]{ % Defines the command and style for the lettrine
 	\lettrine[lines=3,findent=4pt,nindent=0pt]{% Lettrine takes up 3 lines, the text to the right of it is indented 4pt and further indenting of lines 2+ is stopped
-		\color{DarkGoldenrod}% Lettrine colour
+		\color{BlueGiD}% Lettrine colour
 		{#1}% The letter
 	}{}%
 }

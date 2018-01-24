@@ -6,7 +6,7 @@
 %	ARTICLE INFORMATION
 %----------------------------------------------------------------------------------------
 
-\title{Primer acercamiento a la creación de Problem Types en GiD} % The article title
+\title{Primer acercamiento al desarrollo de Problem Types en GiD} % The article title
 
 \author{
 	\authorstyle{Luis G. Yáñez Rodríguez\textsuperscript{1}} % Authors
@@ -31,19 +31,61 @@
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
 
-\lettrineabstract{Al paso del tiempo...}
-
+\lettrineabstract{Sin duda alguna, los modelos computacionales nos han permitido entender el mundo que nos rodea. Ya sea para explicar de una mejor manera un fenómeno o para poder predecirlo. Parte del éxito de estas soluciones tiene que ver con que estas se apoyan de elementos gráficos para la presentación de resultados, en resumen tener algo más o menos ``tangible'', ya que todas las soluciones que en estos métodos se encuentran se resumen en ceros y unos. Existen muchos softwares que ayudan en el pre y post proceso de un método computacional, pero entre ellos destaca uno en particular llamado GiD, The personal pre and post processor, desarrollado por el CIMNE, el cual que permite una amplia adaptación al problema en cuestión y customización de los procesos del modelado matemático.}
 
 \section{Justificación}
 
+Cuando se usa GiD para un análisis en particular, es necesario establecer los parámetros a los que el modelo estará sujeto (preproceso). En esta parte se definen parámetros como, condiciones, materiales, datos generales, sistema de unidades, símbolos y el formato del archivo de salida para el solver\footnote{Conjunto de rutinas de programación para resolver un problema numérico en específico.}. Gracias a la característica de adaptación de \textit{GiD}, los desarrolladores del software crearon una colección de archivos llamada \textbf{Problem Type} que definen los parámetros anteriores. Actualmente la documentación disponible acerca del desarrollo de problem types se encuentra en el idioma inglés, lo cual puede ser una limitante para aquellos que quieran incursionar en el desarrollo de las herramientas. 
+
+\begin{figure}[hbt!]\centering
+	\includegraphics[width=0.2\textwidth]{logoGiD.PNG}
+	\caption{Logo de GiD.}
+\end{figure}
 
 \subsection{Objetivo}
 
+Este documento pretende ser un ``primer acercamiento'' a los problem types para aquellas personas de habla hispana en donde tal vez no encuentren toda la información, pero sí puedan tener un apoyo.
 
 \subsection{Aplicación}
 
+Cabe señalar que este material será sólo un apoyo para la \textit{customización}, no es un manual de usuario de GiD, este se puede encontrar en \textcolor{BlueGiD}{\underline{\url{www.gidhome.com/support/gid-manuals/}}} . En caso de tener dudas muy puntuales el material de apoyo es muy amplio y siempre se puede consultar el \textit{Manual de Customización} o directamente en los foros de ayuda en donde los desarrolladores de GiD ayudarán, el link es \textcolor{BlueGiD}{\underline{\url{www.gidhome.com/forum/}}}.
 
-\section{Descripción del Prototipo}
+\section{Primeros pasos}
+
+¿Qué es lo que hace interesante GiD?. La respuesta es la \textbf{programación}, GiD está escrito para que sea de propósito general, de manera que los usuarios pueden crear sus propios solvers y manipular la información que sale y entra en él. Para explicar lo anterior, se tiene el siguiente diagrama:
+
+\begin{figure}[hbt!]\centering
+	\includegraphics[width=0.35\textwidth]{etapasGiD.PNG}
+	\caption{Diagrama de los procesos que realiza un Problem Type.}
+	\label{fig:diagramaProcesos}
+\end{figure}
+
+La manera como se escribían anteriormente los \textit{problem types} era un poco rudimentaria, de manera que con unas cuantas instrucciones se desplegaban ventanas para la entrada de datos, imposibilitando personalizar estas ventanas.
+
+Desde la versión 13 de GiD, se ha implementado una nueva versión de problem type (basado en la librería CustoLIB), aunque el sistema ``clásico'' sigue siendo soportado por GiD. Esta nueva versión usa un único archivo \texttt{.spd} para describir las propiedades generales, materiales, condiciones y unidades (como un árbol en la sintaxis de \textbf{XML}\footnote{eXtensible Markup Language.}). Toda esta información se muestra en una ``vista de árbol'' y los materiales y condiciones son asociados en grupos de entidades.
+
+Toda esta información es leída y procesada mediante el lenguaje de programación \textbf{TCL}, lenguaje orientado a objetos que permitirá crear interfaces gráficas de usuario (GUI) y darle un mejor aspecto a los problem types.
+
+La combinación de TCL y XML, definirá el rumbo que el usuario le de a su problem type, es por ello que es importante leer y aprender de estas dos herramientos. Una buena guía para TCL se puede encontrar en: \textcolor{BlueGiD}{\underline{\url{www.tcl.tk/doc/}}}, y para XML en: \textcolor{BlueGiD}{\underline{\url{www.w3schools.com/xml/}}}.
+
+\subsection{El sistema del problem type}
+
+Como ya se dijo, un problem type es una colección de utilidades, las cuales permiten al usuario interactuar fácilmente con ellos mediante una GUI y facilita la definición e introducción de todos los datos necesarios para abordar un cálculo en particular. Para preparar los tos para un programa de análisis específicos, es necesario personalizarlo primero. La personalización se define en GiD por medio de un problem type.
+
+El nuevo sistema para la creación de un problem type agrega algunas capacidades adicionales comparado con el sistema clásico:
+
+\begin{itemize}
+	\item Aprovecha las características de formato de XML y su estructura jerarquizada. Almacena información eficientemente. Los elementos en un documento XML forman una estructura de árbol que ``comienza en la raíz y se ramifica en las hojas'' con diferentes relaciones entre los elementos anidados.
+	\item Facilita la creación automática de \textit{ventanas estandarizadas} en el árbol de datos (\textit{data tree}) para introducir datos.
+	\item Permite acoplar entidades con propiedades idénticas en grupos.
+	\item Permite aplicar eficientemente propiedades geométricas y condiciones de contorno en grupos para editar sus propiedades fácilmente.
+\end{itemize}
+
+\subsection{Estructura del problem type}
+
+Un problem type se define usando un directorio con su nombre y arreglo de archivos. El directorio con el problem type estará ubicado en el directorio \textbf{problemtypes} en la distribución \textbf{GiD} que se tenga instalado en la computadora, por ejemplo en Windows 
+
+
 
 
 \section{Bibliografía}
