@@ -62,7 +62,7 @@ Cabe señalar que este material será sólo un apoyo para la \textit{customizaci
 
 La manera como se escribían anteriormente los \textit{problem types} era un poco rudimentaria, de manera que con unas cuantas instrucciones se desplegaban ventanas para la entrada de datos, imposibilitando personalizar estas ventanas.
 
-Desde la versión 13 de GiD, se ha implementado una nueva versión de problem type (basado en la librería CustoLIB), aunque el sistema ``clásico'' sigue siendo soportado por GiD. Esta nueva versión usa un único archivo \texttt{.spd} para describir las propiedades generales, materiales, condiciones y unidades (como un árbol en la sintaxis de \textbf{XML}\footnote{eXtensible Markup Language.}). Toda esta información se muestra en una ``vista de árbol'' y los materiales y condiciones son asociados en grupos de entidades.
+Desde la versión 13 de GiD, se ha implementado una nueva versión de problem type (basado en la librería CustoLIB), aunque el sistema ``clásico'' sigue siendo soportado por GiD. Esta nueva versión usa un único archivo \texttt{.spd} para describir las propiedades generales, materiales, condiciones y unidades (como un árbol en la sintaxis de \textbf{XML}). Toda esta información se muestra en una ``vista de árbol'' y los materiales y condiciones son asociados en grupos de entidades.
 
 Toda esta información es leída y procesada mediante el lenguaje de programación \textbf{TCL}, lenguaje orientado a objetos que permitirá crear interfaces gráficas de usuario (GUI) y darle un mejor aspecto a los problem types.
 
@@ -81,11 +81,259 @@ El nuevo sistema para la creación de un problem type agrega algunas capacidades
 	\item Permite aplicar eficientemente propiedades geométricas y condiciones de contorno en grupos para editar sus propiedades fácilmente.
 \end{itemize}
 
+\subsection{Notepad++}
+Dada la premisa de que para trabajar en GiD utilizaremos dos lenguajes (XML y TCL), necesitamos una herramienta que nos permita una escritura de código versátil. Existen editores de texto que brindan soporte para los diferentes lenguajes de programación es decir, cuando se crea un archivo con extensión \textbf{\texttt{.cpp}} (C++), \textbf{\texttt{.java}} (Java), \textbf{\texttt{.m}} (MATLAB/Octave), el editor detecta las palabras reservadas del lenguaje en cuestión. Una muy buena opción es \textbf{Notepad++}, un libre editor de código fuente que se puede encontrar en:\\ 
+
+\textcolor{BlueGiD}{\underline{\url{www.notepad-plus-plus.org/download/}}}\\
+
+Cabe mencionar que GiD tiene su editor de TCL incluido (\textit{Data}>\textit{Problem type}>\textit{Debugger...}) sin embargo prefiero usar Notepad++ por su gran eficiencia.
+
+Se utilizará este editor para crear, editar y organizar los archivos que componen el problem type.
+
+\subsection{Mini-tutorial de XML}
+
+\begin{itemize}
+	\item ¿QUÉ ES XML?
+		\begin{itemize}
+			\item XML significa eXtensible Markup Language.
+			\item Es un meta-lenguaje que permite representar información estructurada de modo que esta pueda ser almacenada, transmitida, procesada, visualizada e impresa, por diversos dispositivos a través de un \textit{analizador sintáctico}.
+		\end{itemize}
+	\item ¿QUÉ NO ES XML?
+		\begin{itemize}
+			\item No es una versión mejorada de HTML.
+			\item No es un lenguaje para hacer páginas Web.
+			\item No es difícil.
+		\end{itemize}
+	\item ¿POR QUÉ XML?
+		\begin{itemize}
+			\item Es un estándar internacionalmente conocido.
+			\item No pertenece a ninguna compañía.
+		\end{itemize}
+\end{itemize}
+
+Este es un ejemplo de cómo luce un XML. Gracias a su característica de marcado, puede ser interpretado por una computadora y por humanos. La primera línea es de carácter obligatorio ya que define los parámetros de lectura del intérprete.
+
+\lstset{language=XML} 
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Esto es un comentario -->
+<IntegrantesAulaCIMNEUG>
+  <integrante tipo="colaborador">
+    <nombre>Luis Guillermo</nombre>
+    <grado>Pasante de Ingenieria</grado> 
+  </integrante>
+
+  <integrante tipo="responsable">
+    <nombre>Humberto Esqueda</nombre>
+    <grado>Maestro en Ciencias</grado> 
+  </integrante>
+</IntegrantesAulaCIMNEUG>
+\end{lstlisting}
+
+\subsection{Mini-tutorial de TCL}
+
+\lstset{language=tcl} 
+
+\begin{itemize}
+\item Asignar valor a una variable:
+\begin{lstlisting}
+set entero 1; # Valor entero
+set flot 1.0; # Valor flotante 
+\end{lstlisting}
+
+\item Asignar valor de una variable a otra:
+\begin{lstlisting}
+set entero1 "Hola mundo!"; # Uso de cadenas de texto
+set entero2 $entero1; # Asignar valor a variable
+\end{lstlisting}
+
+\item Operaciones matemáticas:
+\begin{lstlisting}
+set tres 3.0
+set suma [expr 1.0+2.0+$tres]; # Sumar numeros con variables
+\end{lstlisting}
+
+\item Crear funciones o procedimientos (\textbf{\texttt{proc}}):
+\begin{lstlisting}
+proc FuncionSuma { arg1 arg2 } {
+	return [expr $arg1+$arg2]; # Regresa suma de dos numeros
+}
+proc ProgramaPrincipal { } {
+	set num1 37.0; # Valor flotante 
+	set num2 45.65; # Valor flotante 
+	set resultado [FuncionSuma $num1 $num2]; # Se utilizan corchetes para invocar otros programas
+	puts $resultado; # Imprimir en pantalla el resultado
+}
+
+\end{lstlisting}
+
+\end{itemize}
+
 \subsection{Estructura del problem type}
 
-Un problem type se define usando un directorio con su nombre y arreglo de archivos. El directorio con el problem type estará ubicado en el directorio \textbf{problemtypes} en la distribución \textbf{GiD} que se tenga instalado en la computadora, por ejemplo en Windows 
+Un problem type se define creando una carpeta cuyo nombre será el nombre del problem type propiamente, seguido de la extensión ''\textbf{.gid}´´ y en esta se colocarán una serie de archivos que tendrán una estructura específica. Para ejemplificar este \textit{manual} se creará uno llamado \textbf{\texttt{EjemploPT.gid}}.
+
+La carpeta del problem type estará ubicada en el directorio \textbf{problemtypes} de la distribución \textit{GiD} que se tenga instalado en la computadora, por ejemplo en caso que sea la versión \texttt{13.1.0d} en Windows, se debe colocar la carpeta \textbf{\texttt{EjemploPT.gid}} en la dirección:
+
+\begin{verbatim}
+	C:\Program Files\GiD\GiD 13.1.0d\problemtypes
+\end{verbatim}
+
+Una vez colocada la carpeta en la dirección anterior, crearemos con ayuda de \textbf{Notepad++} y colocaremos en \textbf{\texttt{EjemploPT.gid}} los siguientes archivos:
+
+\begin{table}[hbtp!]
+	\label{tab:estructuraArchivos}
+	\begin{tabular}{l m{4.5cm}}
+		\rowcolor{BlueGiD!60} Nombre del archivo & Descripción\\
+		\rowcolor{BlueGiD!20} EjemploPT.spd & Archivo de configuración principal del árbol de datos, basado en \textbf{XML}.\\
+		EjemploPT.tcl & Archivo \textbf{TCL} principal, inicialización.\\
+		\rowcolor{BlueGiD!20} EjemploPT.cnd & Definición de condiciones. No debería modificarlo el usuario final.\\
+		EjemploPT.xml & Define la configuración principal del problemtype.\\
+	\end{tabular}
+	\caption{Archivos contenidos en \textbf{\texttt{EjemploPT.gid}} para inicializar el problem type.}
+\end{table}
+
+De modo que el directorio del problem type se vería así:
+
+\begin{verbatim}
+	EjemploPT.gid
+	EjemploPT.gid\EjemploPT.spd
+	EjemploPT.gid\EjemploPT.tcl
+	EjemploPT.gid\EjemploPT.cnd
+	EjemploPT.gid\EjemploPT.xml
+\end{verbatim}
+
+Teniendo esto, abrimos \textit{GiD}, en el menú \textit{Data}>\textit{Problem type} se debe encontrar el problem type \textbf{\texttt{EjemploPT}}. Si al seleccionarlo no se ha producido ningún error, \textbf{los archivos se han cargado satisfactoriamente}.
+
+\section{Estructura de los archivos}
+
+En esta sección hablaré únicamente de la estructura y parámetros de configuración adecuada a los archivos que se describieron en \ref{tab:estructuraArchivos} para comenzar la personalización de GiD.
+
+\subsection{EjemploPT.xml}
+
+El archivo de configuración inicial XML, contiene datos generales del programa. Este archivo generalmente sólo se configura una sóla vez, ya que los datos sólo son informativos.
+
+Aunque el archivo es muy corto, la información es escencial, no se debe omitir ninguna etiqueta ni modificar los identificadores.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Existen más identificadores para moldear el problem type, pero estos identificadores son los esenciales para ejecutarlo:
+
+\lstset{language=XML} 
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<Infoproblemtype version="1.0">
+  <Program>
+    <Name>EjemploPT</Name>
+    <Version>1.0</Version>   
+    <MinimumGiDVersion>12.1.11d</MinimumGiDVersion>
+    <CustomLibAutomatic>1</CustomLibAutomatic>
+ </Program>
+</Infoproblemtype>
+\end{lstlisting}
+
+\textcolor{red}{NOTA:} Cabe señalar que el \textit{campo} \texttt{\textcolor{darkblue}{CustomLibAutomatic}} debe tener el valor de \texttt{\textcolor{darkblue}{1}} (uno). Este activa el uso de la librería \textit{CustomLib} que permite acceder a funciones del nuevo sistema de problem types.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Al escribir esto en el archivo XML, se guardan los cambios en el archivo.
+
+\subsection{EjemploPT\_default.spd}
+
+Este archivo establece la configuración principal del \textit{Árbol de datos} (\textit{Data tree}, en inglés), cuyo fin es estructural las condiciones, materiales y otros datos del modelo computacional.
+
+Como se dijo en \ref{tab:estructuraArchivos}, está basado en XML y los \textit{campos}, \textit{atributos} y otros identificadores que debe contener \textbf{ya están establecidos por GiD} para que el software los interprete y posteriormente crear elementos gráficos con ellos.
+
+% Poner referencia del Customization_Manual.pdf
+Por ejemplo en la documentación de GiD se detalla la descripción de estos identificadores y su aplicación. Aquí solamente se describen algunos de ellos:
+
+\subsubsection{$<$PT\_data$>$}
+
+\vspace{0.20cm}
+\begin{center}
+	\texttt{$<$PT\_data$>$}
+\end{center}
+\vspace{0.20cm}
+
+Es la raíz principal del archivo \texttt{.spd}. Contiene el número de versión y el nombre del problem type. Los caracteres \texttt{PT} deben ser remplazados por el nombre del problem type.
+
+\vspace{0.15cm}
+\vspace{0.15cm}
+\textit{Atributos}:
+
+\vspace{0.15cm}
+	\textbf{version} - Número de versión interno.
+\vspace{0.15cm}
 
 
+Como el problem type se llama \texttt{EjemploPT}, el nodo principal es:
+
+\lstset{language=XML} 
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+
+<EjemploPT_data version='1.0'>
+	...
+</EjemploPT_data>
+\end{lstlisting}
+
+\subsubsection{$<$container$>$}
+
+\vspace{0.20cm}
+\begin{center}
+	\texttt{$<$container$>$}
+\end{center}
+\vspace{0.20cm}
+
+
+Es la forma más simple de agrupar datos y mejorar su visualización. En la ventana resultante, además de las entradas, se encontrarán los siguientes botones:
+
+\begin{figure}[hbtp!]
+	\centering
+	\includegraphics[scale=1]{container.png}
+\end{figure}
+
+Puede contener los siguientes campos: \texttt{<value>}, \texttt{<container>}, \texttt{<condition>}, \texttt{<functions>} y \texttt{<dependencies>}.
+
+\vspace{0.15cm}
+\textit{Atributos}:
+
+\vspace{0.15cm}
+	\textbf{n} - Nombre usado para referenciar el campo, especialmente cuando se escriben los arhivos \texttt{.dat} y \texttt{.tcl}.\\
+	\textbf{pn} - Etiqueta que será visualizada por el usuario.\\
+	\textbf{icon} - Permite poner una imagen en formato \texttt{.png} en el \textit{data tree}- La imagen debe ser guardada dentro de la carpeta llamada \texttt{images} del problem type.\\
+	\textbf{help} - Despliega una ventana \textit{pop-up} con información de ayuda relacionada a la tarea que el usuario desea realizar. Aparece a los pocos segundos de posicionar el cursor en el container.\\
+	\textbf{actualize\_tree} - Actualiza la información que contiene en todo el \textit{data tree} y automáticamente actualiza los datos mostrados en la interfaz del usuario. Es un valor booleano de 1 o 0 indicado si está activada o desactivada esta función.
+\vspace{0.15cm}
+
+\lstset{language=XML} 
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+
+<EjemploPT_data version='1.0'>
+	<container n="contenedor1" pn="Container 1" help="Esto es un ejemplo." actualize_tree="1">
+		<container n="contenedor2" pn="Container 2" help="Containers anidados" actualize_tree="1">
+			<value n='valor' pn='Valor' v='1.0'/>
+		</container>
+	</container>
+</EjemploPT_data>
+\end{lstlisting}
+
+\subsubsection{$<$value$>$}
+
+\vspace{0.20cm}
+\begin{center}
+	\texttt{$<$value$>$}
+\end{center}
+\vspace{0.20cm}
+
+Es el campo principal para almacenar datos. Este campo permite definir una \textit{caja de entrada} en la ventana.
+
+\vspace{0.15cm}
+\textit{Atributos}:
+
+\vspace{0.15cm}
+	\textbf{n} - Nombre usado para referenciar el campo, especialmente cuando se escriben los arhivos \texttt{.dat} y \texttt{.tcl}.\\
+	\textbf{pn} - Etiqueta que será visualizada por el usuario.\\
+	\textbf{v} - El valor o valor por defecto del campo.\\
+\vspace{0.15cm}
 
 
 \section{Bibliografía}

@@ -2,8 +2,12 @@
 
 # Carpeta de LaTeX
 PTManual.aux
+PTManual.out
+PTManual.dvi
 PTManual.log
 PTManual.pdf
 PTManual.run.xml
 PTManual.synctex.gz
+
+structure.log
 
