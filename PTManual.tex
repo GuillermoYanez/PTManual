@@ -231,7 +231,7 @@ Existen más identificadores para moldear el problem type, pero estos identifica
 </Infoproblemtype>
 \end{lstlisting}
 
-\textcolor{red}{NOTA:} Cabe señalar que el \textit{campo} \texttt{\textcolor{darkblue}{CustomLibAutomatic}} debe tener el valor de \texttt{\textcolor{darkblue}{1}} (uno). Este activa el uso de la librería \textit{CustomLib} que permite acceder a funciones del nuevo sistema de problem types.
+\textcolor{red}{NOTA:} Cabe señalar que la \textit{etiqueta} \texttt{\textcolor{darkblue}{CustomLibAutomatic}} debe tener el valor de \texttt{\textcolor{darkblue}{1}} (uno). Este activa el uso de la librería \textit{CustomLib} que permite acceder a funciones del nuevo sistema de problem types.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Al escribir esto en el archivo XML, se guardan los cambios en el archivo.
 
@@ -242,7 +242,9 @@ Este archivo establece la configuración principal del \textit{Árbol de datos} 
 Como se dijo en \ref{tab:estructuraArchivos}, está basado en XML y los \textit{campos}, \textit{atributos} y otros identificadores que debe contener \textbf{ya están establecidos por GiD} para que el software los interprete y posteriormente crear elementos gráficos con ellos.
 
 % Poner referencia del Customization_Manual.pdf
-Por ejemplo en la documentación de GiD se detalla la descripción de estos identificadores y su aplicación. Aquí solamente se describen algunos de ellos:
+En XML podemos crear \textit{campos o etiquetas} con cualquier nombre, para almacenar diferentes datos estos identificadores. En la programación de problem types, los nombre de estos campos o etiquetas ya se encuentran reservados y son así para que el GiD pueda interpretarlos y este último pueda crear objetos gráficos. En la documentación de GiD se describe la estructura adecuada para estas \textit{etiquetas}.
+
+Para ramificar el árbol de datos, estas etiquetas pueden anidarse para contener objetos dentro de otros. En este manual solo se describen algunas de ellas:
 
 \subsubsection{$<$PT\_data$>$}
 
@@ -252,7 +254,7 @@ Por ejemplo en la documentación de GiD se detalla la descripción de estos iden
 \end{center}
 \vspace{0.20cm}
 
-Es la raíz principal del archivo \texttt{.spd}. Contiene el número de versión y el nombre del problem type. Los caracteres \texttt{PT} deben ser remplazados por el nombre del problem type.
+Es \textbf{etiqueta principal y obligatoria} del archivo \texttt{.spd}. Contiene el número de versión y el nombre del problem type. Los caracteres \texttt{PT} deben ser remplazados por el nombre del problem type.
 
 \vspace{0.15cm}
 \vspace{0.15cm}
@@ -290,7 +292,7 @@ Es la forma más simple de agrupar datos y mejorar su visualización. En la vent
 	\includegraphics[scale=1]{container.png}
 \end{figure}
 
-Puede contener los siguientes campos: \texttt{<value>}, \texttt{<container>}, \texttt{<condition>}, \texttt{<functions>} y \texttt{<dependencies>}.
+Puede contener o anidarse en esta etiqueta los siguientes campos: \texttt{<value>}, \texttt{<container>}, \texttt{<condition>}, \texttt{<functions>} y \texttt{<dependencies>} (en este manual no se definirán todas las etiquetas).
 
 \vspace{0.15cm}
 \textit{Atributos}:
@@ -307,10 +309,10 @@ Puede contener los siguientes campos: \texttt{<value>}, \texttt{<container>}, \t
 \begin{lstlisting}
 <?xml version="1.0" encoding="utf-8"?>
 
-<EjemploPT_data version='1.0'>
+<EjemploPT_data version="1.0">
 	<container n="contenedor1" pn="Container 1" help="Esto es un ejemplo." actualize_tree="1">
 		<container n="contenedor2" pn="Container 2" help="Containers anidados" actualize_tree="1">
-			<value n='valor' pn='Valor' v='1.0'/>
+			<value n="valor" pn="Valor" v="1.0"/>
 		</container>
 	</container>
 </EjemploPT_data>
@@ -335,13 +337,50 @@ Es el campo principal para almacenar datos. Este campo permite definir una \text
 	\textbf{v} - El valor o valor por defecto del campo.\\
 \vspace{0.15cm}
 
+\lstset{language=XML} 
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<container n="caja" pn="Caja">
+  <value n="base" pn="Base:" v="5.00"/>
+  <value n="altura" pn="Altura:" v="6.00"/>
+</container>
+\end{lstlisting}
 
-\section{Bibliografía}
 
+El código anterior produce:
+
+\begin{figure}[hbtp!]
+	\centering
+	\includegraphics[scale=.8]{value_field.png}
+\end{figure}
+
+\subsubsection{$<$procs$>$ y $<$proc$>$ }
+
+\vspace{0.20cm}
+\begin{center}
+	\begin{tabular}{rcl}
+		\texttt{$<$procs$>$} &y&\texttt{$<$proc$>$}\\
+	\end{tabular}
+\end{center}
+\vspace{0.20cm}
+
+La etiqueta \texttt{$<$procs$>$} \textbf{agrupa las declaraciones} de los procedimientos o funciones (\texttt{procs}) de TCL que se ejecutarán desde el árbol de datos. En cambio con la etiqueta \texttt{$<$proc$>$} \textbf{se declaran} como tal. En el archivo \texttt{.tcl} se definen, como veremos más adelante.
+
+La etiqueta \texttt{$<$procs$>$} no lleva ningún atributo. La etiqueta \texttt{$<$proc$>$} lleva los siguientes atributos:
+
+\vspace{0.15cm}
+\textit{Atributos}:
+
+\vspace{0.15cm}
+	\textbf{n} - Nombre usado para referenciar el campo, especialmente cuando se escriben los arhivos \texttt{.dat} y \texttt{.tcl}.\\
+	\textbf{args} - ``args'', el cual indica al intérprete de GiD que se introducirá información acerca de los nodos.\\
+\vspace{0.15cm}
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
+
+\section{Bibliografía}
 
 %\printbibliography[title={Bibliography}] % Print the bibliography, section title in curly brackets
 
