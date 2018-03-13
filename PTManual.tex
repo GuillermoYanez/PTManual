@@ -422,10 +422,10 @@ Sintetizando lo anterior, se muestra el siguiente ejemplo:
 \lstset{language=XML} 
 \begin{lstlisting}
 <?xml version="1.0" encoding="utf-8"?>
-<container n="caja" pn="Caja">
-  <value n="base" pn="Base:" v="5.00"/>
-  <value n="altura" pn="Altura:" v="6.00"/>
-  <value n="area" pn="Area de cuadrado:" v="[CalcularArea]"/>
+<container n="caja" pn="Area rectangulo" actualize_tree="1">
+  <value n="base" pn="Base" v="5.00" actualize_tree="1"/>
+  <value n="altura" pn="Altura:" v="6.00"actualize_tree="1"/>
+  <value n="area" pn="Area" v="[CalcularArea]" actualize_tree="1"/>
 </container>
 <procs>
   <proc n="calculararea" args="args">
@@ -436,7 +436,14 @@ Sintetizando lo anterior, se muestra el siguiente ejemplo:
 </procs>
 \end{lstlisting}
 
-Así, TCL podrá leer y ejecutar la función \texttt{CalcularArea} misma que deberá ser definida en el archivo \texttt{EjemploPT.tcl}.
+Así, TCL podrá leer y ejecutar la función \texttt{CalcularArea} misma que deberá ser definida posteriormente en la sección siguiente.
+
+
+\subsection{EjemploPT.tcl}
+
+A diferencia de los archivos anteriores, que definen la estructura del problem type, el archivo \texttt{.tcl} define la lógica de esa estructura. Se definirán aquí, tanto los métodos 
+
+
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
