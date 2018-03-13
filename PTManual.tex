@@ -347,14 +347,55 @@ Es el campo principal para almacenar datos. Este campo permite definir una \text
 \end{lstlisting}
 
 
-El código anterior produce:
+\textit{Anidar} las etiquetas \texttt{$<$value$>$} en \texttt{$<$container$>$}, como el ejemplo anterior produce lo siguiente:
 
 \begin{figure}[hbtp!]
 	\centering
 	\includegraphics[scale=.8]{value_field.png}
 \end{figure}
 
-\subsubsection{$<$procs$>$ y $<$proc$>$ }
+\subsubsection{$<$procs$>$ y $<$proc$>$}
+
+% INCLUIR BIBLIOGRAFÍA DE CDATA
+\textcolor{red}{\textbf{¡IMPORTANTE!}:} Antes de explicar las etiquetas \texttt{$<$procs$>$} y \texttt{$<$proc$>$} se debe explicar el uso de las \textbf{secciones \texttt{CDATA}}. En un documento XML, una sección \texttt{CDATA} (del inglés, \textbf{character data}) es aquella perteneciente a un documento que es marcado para que el \textit{analizador sintáctico} lo interprete como una cadena de caracteres y no como contenido etiquetado. No hay diferencia semántica entre una cadena de caracteres dentro de una sección \texttt{CDATA} y la sintaxis usual en la que ``$<$'', ``$>$'' y ``$\&$'' estarían representados por ``\texttt{\&lt}'', ``\texttt{\&gt}'' y ``\texttt{\&amp}'' respectivamente.
+
+Una sección \texttt{CDATA} empieza con la siguiente secuencia:
+
+\begin{flushleft}
+\begin{verbatim}
+<![CDATA[
+\end{verbatim}
+\end{flushleft}
+
+y termina con la primera ocurrencia de la secuencia:
+
+\begin{flushleft}
+\begin{verbatim}
+]]>
+\end{verbatim}
+\end{flushleft}
+
+los caracteres encapsulados dentro de estas dos secuencias son interpretados como caracteres, no como etiquetas o como referencia a entidades.
+
+\lstset{language=XML} 
+\begin{lstlisting}
+<nombre>Luis Guillermo</nombre>
+\end{lstlisting}
+
+El texto contenido dentro de las etiquetas \textbf{\texttt{nombre}} es interpretado como elemento XML. Sin embargo si se escribe de esta manera:
+
+
+\begin{verbatim}
+<![CDATA[<nombre>Luis Guillermo</nombre>]]>
+\end{verbatim}
+
+Es interpretado como si se hubiera escrito así:
+
+\begin{verbatim}
+&lt;nombre&gt;Luis Guillermo&lt;/nombre&gt;
+\end{verbatim}
+
+¿Qué finalidad tiene esto?. Lo que interesa aquí, es que el texto contenido en una sección \texttt{CDATA} no sea leído por XML y sea interpretado por TCL. ¿Qué es eso que debe interpretar TCL y no XML?, TCL debe leer funciones de TCL. ¿Y cómo se le indica a TCL qué es lo que debe interpretar él y no XML?, mediante las etiquetas \texttt{$<$procs$>$} y \texttt{$<$proc$>$}. Todo aquello contenido dentro de estas últimas será leído por TCL.
 
 \vspace{0.20cm}
 \begin{center}
@@ -364,7 +405,7 @@ El código anterior produce:
 \end{center}
 \vspace{0.20cm}
 
-La etiqueta \texttt{$<$procs$>$} \textbf{agrupa las declaraciones} de los procedimientos o funciones (\texttt{procs}) de TCL que se ejecutarán desde el árbol de datos. En cambio con la etiqueta \texttt{$<$proc$>$} \textbf{se declaran} como tal. En el archivo \texttt{.tcl} se definen, como veremos más adelante.
+La etiqueta \texttt{$<$procs$>$} \textbf{agrupa las declaraciones de los procedimientos} o funciones (\texttt{procs}) de TCL que se ejecutarán desde el árbol de datos. En cambio con la etiqueta \texttt{$<$proc$>$} \textbf{se declaran} como tal. En el archivo \texttt{.tcl} se definen, como veremos más adelante.
 
 La etiqueta \texttt{$<$procs$>$} no lleva ningún atributo. La etiqueta \texttt{$<$proc$>$} lleva los siguientes atributos:
 
@@ -376,6 +417,26 @@ La etiqueta \texttt{$<$procs$>$} no lleva ningún atributo. La etiqueta \texttt{
 	\textbf{args} - ``args'', el cual indica al intérprete de GiD que se introducirá información acerca de los nodos.\\
 \vspace{0.15cm}
 
+Sintetizando lo anterior, se muestra el siguiente ejemplo:
+
+\lstset{language=XML} 
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<container n="caja" pn="Caja">
+  <value n="base" pn="Base:" v="5.00"/>
+  <value n="altura" pn="Altura:" v="6.00"/>
+  <value n="area" pn="Area de cuadrado:" v="[CalcularArea]"/>
+</container>
+<procs>
+  <proc n="calculararea" args="args">
+    <![CDATA[
+      CalcularArea $domNode $args
+    ]]>
+  </proc>
+</procs>
+\end{lstlisting}
+
+Así, TCL podrá leer y ejecutar la función \texttt{CalcularArea} misma que deberá ser definida en el archivo \texttt{EjemploPT.tcl}.
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
