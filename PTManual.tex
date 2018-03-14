@@ -210,7 +210,7 @@ Teniendo esto, abrimos \textit{GiD}, en el menú \textit{Data}>\textit{Problem t
 En esta sección hablaré de la estructura y parámetros de configuración adecuados a los archivos que se describieron en \ref{tab:estructuraArchivos} para comenzar la personalización de GiD.
 
 \subsection{EjemploPT.xml}
-
+\label{sec:codigoXML}
 El archivo de configuración inicial XML, contiene datos generales del programa. Este archivo generalmente sólo se configura una sóla vez, ya que los datos sólo son informativos.
 
 Aunque el archivo es muy corto, la información es esencial, no se debe omitir ninguna de estas etiquetas ni modificar los identificadores. Existen más etiquetas para darle más información a GiD sobre nuestro problem type, pero estas son de uso \textbf{obligatorio}.
@@ -260,7 +260,6 @@ Es \textbf{etiqueta principal y obligatoria} del archivo \texttt{.spd}. Contiene
 	\textbf{version} - Número de versión interno.
 \vspace{0.15cm}
 
-
 Como el problem type se llama \texttt{EjemploPT}, el nodo principal es:
 
 \lstset{language=XML} 
@@ -301,6 +300,9 @@ Puede contener o anidarse en esta etiqueta los siguientes campos: \texttt{<value
 	\textbf{actualize\_tree} - Actualiza la información que contiene en todo el \textit{data tree} y automáticamente actualiza los datos mostrados en la interfaz del usuario. Es un valor booleano de 1 o 0 indicado si está activada o desactivada esta función.
 \vspace{0.15cm}
 
+\textit{Uso}:
+\vspace{0.15cm}
+
 \lstset{language=XML} 
 \begin{lstlisting}
 <?xml version="1.0" encoding="utf-8"?>
@@ -315,7 +317,7 @@ Puede contener o anidarse en esta etiqueta los siguientes campos: \texttt{<value
 \end{lstlisting}
 
 \subsubsection{$<$value$>$}
-
+\label{subsubsec:value}
 \vspace{0.20cm}
 \begin{center}
 	\texttt{$<$value$>$}
@@ -331,6 +333,11 @@ Es el campo principal para almacenar datos. Este campo permite definir una \text
 	\textbf{n} - Nombre usado para referenciar el campo, especialmente cuando se escriben los arhivos \texttt{.dat} y \texttt{.tcl}.\\
 	\textbf{pn} - Etiqueta que será visualizada por el usuario.\\
 	\textbf{v} - El valor o valor por defecto del campo.\\
+	\textbf{values} - Lista de cadenas de caracteres separados por comas. Crea una lista desplegable. Por ejemplo: \texttt{values="Poisson,Young"}.\\
+	\textbf{actualize\_tree} - Actualiza la información que contiene en todo el \textit{data tree}.
+\vspace{0.15cm}
+
+\textit{Uso}:
 \vspace{0.15cm}
 
 \lstset{language=XML} 
@@ -342,13 +349,51 @@ Es el campo principal para almacenar datos. Este campo permite definir una \text
 </container>
 \end{lstlisting}
 
-
 \textit{Anidar} las etiquetas \texttt{$<$value$>$} en \texttt{$<$container$>$}, como el ejemplo anterior produce lo siguiente:
 
 \begin{figure}[hbtp!]
 	\centering
 	\includegraphics[scale=.8]{value_field.png}
 \end{figure}
+
+
+\subsubsection{$<$blockdata$>$}
+
+\vspace{0.20cm}
+\begin{center}
+	\texttt{$<$blockdata$>$}
+\end{center}
+\vspace{0.20cm}
+
+Representa un arreglo de propiedades con algún tipo de relación. Un campo ``\texttt{blockdata}'' puede copiarse a sí mismo para duplicar y crear diferentes arreglos. Esta etiqueta es comúnmente utilizada para uso como \textit{base de datos} del problem type.
+
+\vspace{0.15cm}
+\textit{Atributos}:
+
+\vspace{0.15cm}
+	\textbf{n} - Nombre usado para referenciar el campo, especialmente cuando se escriben los arhivos \texttt{.dat} y \texttt{.tcl}.\\
+	\textbf{name} - Atributo que será visualizado por el usuario.\\
+	\textbf{icon} - Permite poner una imagen en formato .png en el árbol de datos. La imagen debe ser almacenada dentro de la carpeta \texttt{images} del directorio del problem type (ejemplo: \texttt{EjemploPT.gid\textbackslash images\textbackslash icono.png}).\\
+\vspace{0.15cm}
+
+\textit{Uso}:
+\vspace{0.15cm}
+
+\lstset{language=XML} 
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<container n="basedatos" pn="Base de datos">
+	<blockdata n="libro" name="Aspectos fundamentales del concreto reforzado">
+		<value n='id' pn='ID' v='50.0 GON E1'/>
+		<value n='isbn' pn='ISBN' v='968-4981-7'/>
+	</blockdata>
+	<blockdata n="libro" name="Calculo de estructuras por el metodo de los elementos finitos">
+		<value n='id' pn='ID' v='30.40 ONA E1'/>
+		<value n='isbn' pn='ISBN' v='84-87867-00-6'/>
+	</blockdata>
+</container>
+\end{lstlisting}
+
 
 \subsubsection{$<$procs$>$ y $<$proc$>$}
 
@@ -413,7 +458,8 @@ La etiqueta \texttt{$<$procs$>$} no lleva ningún atributo. La etiqueta \texttt{
 	\textbf{args} - ``args'', el cual indica al intérprete de GiD que se introducirá información acerca de los nodos.\\
 \vspace{0.15cm}
 
-Sintetizando lo anterior, se muestra el siguiente ejemplo:
+\textit{Uso}:
+\vspace{0.15cm}
 
 \lstset{language=XML} 
 \begin{lstlisting}
@@ -432,7 +478,7 @@ Sintetizando lo anterior, se muestra el siguiente ejemplo:
 </procs>
 \end{lstlisting}
 
-Así, TCL podrá leer y ejecutar la función \texttt{CalcularArea} misma que deberá ser definida posteriormente en la sección siguiente.
+Así, TCL podrá leer y ejecutar una función llamada \texttt{CalcularArea}, que será definida en la sección que sigue con ayuda de las funciones \texttt{CustomLib}.
 
 
 \subsection{EjemploPT.tcl}
@@ -440,6 +486,7 @@ Así, TCL podrá leer y ejecutar la función \texttt{CalcularArea} misma que deb
 A diferencia de los archivos anteriores, que definen la estructura del problem type, el archivo \texttt{.tcl} define la lógica de esa estructura. El lenguaje de este archivo, como su extensión lo indica es \textbf{TCL/TK puro}. Toda la documentación acerca del lenguaje TCL se encuentra disponible en el manual que se mostró en la sección \ref{sec:manualTCL}.
 
 \subsubsection{Eventos}
+\label{sec:eventosGiD}
 Como hemos visto anteriormente, hay etiquetas con un nombre específico que GiD interpreta para realizar diferentes acciones. Lo mismo sucede en el archivo \texttt{.tcl} pero con los \textbf{eventos}. Los eventos en la programación, son rutinas de código que se ejecutan cuando una acción se realiza durante el programa, mismas que el usuario invoca. Por ejemplo, cuando el usuario abre GiD, se deben ejecutar las funciones para cargar el área de dibujo, abrir la barra de herramientas, cargar el idioma y las preferencias del usuario,etc. Cuando se crea un problem type sucede lo mismo, pero a diferencia de los ejemplos anteriores, estas funciones ya se encuentran definidas por GiD y listas para editarse.
 
 La guía del uso de estas funciones se encuentran en el \textit{Customization Manual} contenido en esta bibliografía, pero aquí se mencionan las más importantes:
@@ -493,15 +540,271 @@ proc EjemploPT::CalcularAreaCirculo { } {
 }
 \end{lstlisting}
 
+Para el ejemplod de la sección anterior (\texttt{CalcularArea}):
+
+\lstset{language=tcl} 
+\begin{lstlisting}[caption={Cálculo del área obteniendo los valores desde el archivo \texttt{.spd} usando las funciones de \texttt{CustomLib}.}]
+proc CalcularArea { } {
+	set rootXML [customlib::GetBaseRoot]
+	set base [get_domnode_attribute [$rootXML selectNodes "\container\[@n='caja'\]/value\[@n='base'\]"] v]
+	set altura [get_domnode_attribute [$rootXML selectNodes "\container\[@n='caja'\]/value\[@n='altura'\]"] v]
+	return [expr $base*$altura]
+}
+\end{lstlisting}
  
 \section{Problem type: EjemploPT.gid}
 
-Orientaré esta manual a solo un ejemplo: \textbf{hacer un problem type para dibujar un conjunto secciones de trabes AASHTO, seleccionando el tipo mediante listas desplegables en el árbol de datos}. Se trabajará únicamente con los archivos \texttt{.tcl} y \texttt{.spd} ya que el archivo \texttt{.xml} sólo es de configuración.
+Orientaré esta manual a solo un ejemplo en el que se abarque el uso de las estructuras antes vistas. Se trabajará únicamente con los archivos \texttt{.tcl} y \texttt{.spd} ya que el archivo \texttt{.xml} sólo es de configuración y se puede ``reutilizar'', por ende consideraré que los archivos \texttt{.tcl} y \texttt{.spd} se encuentran en blanco. Primero plantearé las \textit{Consideraciones generales} que debe cubrir el problema. Posteriormente la programación del problem type. 
 
 \subsection{Consideraciones generales}
+\label{sec:consideraciones}
+Se pretende crear un problem type en el que se pueda \textbf{dibujar la geometría de un conjunto de secciones de trabes AASHTO} de forma \textbf{paramétrica}, seleccionando el tipo de trabe mediante \textit{listas desplegables} en el árbol de datos. La geometría de la sección transversal de las trabes es:
+% REFERENCIA DE LAS MEDIDAS
+\begin{figure}[hbt!]\centering
+	\includegraphics[width=0.5\textwidth]{sectrans_trabes.PNG}
+	\label{fig:sectrans_trabes}
+	\caption{Sección transversal de trabes AASHTO.}
+\end{figure}
 
-Se
+Con sus respectivas medidas:
 
+\begin{table}[hbtp!]
+\centering
+	\label{tab:medidasAASHTO}
+	\begin{tabular}{*{7}{c}}
+		\rowcolor{BlueGiD!60} Tipo&D1&D2&D3&D4&D5&D6\\
+		\rowcolor{BlueGiD!20} I&71&10&0&7.6&13&13\\
+		II&91&15&0&7.6&15&15\\
+		\rowcolor{BlueGiD!20}III&114&18&0&14&19&18\\
+		IV&137&20&0&15&23&20\\
+		\rowcolor{BlueGiD!20}V&160&13&7.6&10&25&20\\
+		VI&183&13&7.6&10&25&20\\
+	\end{tabular}
+	\vspace{0.2cm}
+	\begin{tabular}{*{7}{c}}
+		\rowcolor{BlueGiD!60} Tipo&B1&B2&B3&B4&B5&B6\\
+		\rowcolor{BlueGiD!20} I30&41&15&7.6&0&13\\
+		II&30&46&15&7.6&0&15\\
+		\rowcolor{BlueGiD!20}III&41&56&18&11&0&19\\
+		IV&51&66&20&15&0&23\\
+		\rowcolor{BlueGiD!20}V&107&71&20&10&33&25\\
+		VI&107&71&20&10&33&25\\
+	\end{tabular}
+	\caption{Medidas de las secciones transversales para las trabes AASHTO (en pulgadas, \textit{in}.}
+\end{table}
+
+Lo que necesitamos primero es plantear la estructura del árbol de datos, . Esta podría sintetizarse en el siguiente diagrama:
+
+\begin{figure}[hbt!]\centering
+	\includegraphics[width=0.45\textwidth]{estructura_spd.PNG}
+	\label{fig:estructura_spd}
+	\caption{Estructura del archivo SPD de \texttt{EjemploPT.gid}.}
+\end{figure}
+
+Lo anterior expone que a partir de la etiqueta/raíz del problem type \texttt{$<$EjemploPT\_data$>$} se crea un \texttt{$<$container$>$} que almacene un cuadro de valores \texttt{$<$value$>$}, este mostrará una lista desplegable con los valores ``Trabe tipo I'', ``Trabe tipo II'', etc., las propiedades geométricas serán almancenadas en las etiquetas \texttt{$<$blockdata$>$}, mismas que fungirán como \textit{base de datos} del problem type.
+
+Organizando la información previa, se detallan los pasos a seguir para el ejemplo:
+
+\begin{enumerate}
+	\item Definir los datos de información del problem type en el archivo \texttt{.xml} (Reutilizado de la sección \ref{sec:codigoXML}).
+	\item Escribir en el archivo \texttt{.spd} la estructura del árbol de datos tal y como se muestra en la figura \ref{fig:estructura_spd}.
+	\item Escribir las rutinas necesarias en el archivo \texttt{.tcl} para cargar el \textit{árbol de datos} e inicializar eñ \texttt{namespace} del problem type.
+	\item Crear el catálogo de \texttt{blockdata} que guarde las propiedades geométricas de las trabes (de la tabla \ref{tab:medidasAASHTO}) en un archivo XML. Se puede guardar en al mismo archivo \texttt{.spd} pero aquí lo haré en un archivo separado para mantener una buena práctica de programación.
+	\item Hacer una función en TCL que devuelva la lista de los tipos de trabes y vincularla al archivo \texttt{.spd} mediante las etiquetas \texttt{$<$procs$>$}.
+	\item Programar un procedimiento en el archivo \texttt{.tcl} que, mediante el tipo de trabe seleccionado en el punto anterior, busque y obtenga las propiedades geométricas almacenadas en el \texttt{blockdata} y las guarde variables globales.
+	\item Una vez almacenadas los datos de la geometría, programar el procedimiento en el archivo \texttt{.tcl} para dibujar las trabes de forma paramétrica.
+\end{enumerate}
+
+
+\subsection{Programando el código}
+
+\subsubsection{Archivo \texttt{.spd}}
+
+Una vez escrito el archivo de datos de información del problem type (\texttt{.xml}), escribimos en el archivo \texttt{.spd} en blanco las siguientes líneas de código. El contenido \texttt{CDATA} contiene la llamada de una función que crearemos más adelante llamada \textcolor{blue}{\texttt{EjemploPT::ListaTrabes}}.
+
+\lstset{language=XML} 
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+
+<EjemploPT_data version='1.0'>
+	<container n="tipoTrabe" pn="Tipo de trabe AASHTO" actualize_tree="1">
+		<value n="tipo" pn="Tipo" v="Tipo I" values="[ListaTrabes]" actualize_tree="1"/>
+  	</container>
+  	<procs>
+    	<proc n='ListaTrabes' args='args'>
+      	<![CDATA[
+        	EjemploPT::ListaTrabes $domNode $args
+      	]]>
+    	</proc>
+  	</procs>
+</EjemploPT_data>
+\end{lstlisting}
+
+Esto creará una estructura como se deseaba en el la figura \ref{fig:estructura_spd}.
+
+\subsubsection{Archivo \texttt{.tcl}}
+
+Hasta el momento hemos visto cómo crea un \textit{Data tree} (o árbol de datos), pero al cargar nuestro problem type (\texttt{Data$>$Problem type$>$}\textit{Seleccionar problem type de la lista}), la opción para abrirlo no se encuentra por ninguna parte. Esto es porque no hemos escrito nada en el archivo \texttt{.tcl} ni mucho menos \textbf{le hemos especificado al programa que lo abra}. Como se mencionó en secciones previas, el archivo de TCL será aquel que le otorgue la lógica a nuestro programa. Por lo tanto la primera rutina que programaremos será la de abrir el \textit{árbol de datos} inmediatamente cuando carguemos el problem type en GiD, para ello utilizaremos el recurso \texttt{InitGIDProject} visto en la sección \ref{sec:eventosGiD}.
+
+Siguiendo los pasos que se detallan en la sección \ref{sec:consideraciones}, lo que tenemos que hacer es crear un \texttt{namespace} para el problem type, almacenar las variables globales (\texttt{D} y \texttt{B}) que definen la geometría de las trabes e invocar la rutina para abrir el \textit{árbol de datos}. También se creará un submenú para ejecutar el dibujo paramétrico, este se definirá después pero servirá para ejemplificar la creación de menús en TCL. Y por último una serie de rutinas para almacenar la dirección absoluta del problem type (se utilizará después).
+
+\lstset{language=tcl} 
+\begin{lstlisting}[caption={Código para inicializar el proyecto y crear el menú.}]
+# Proyecto EjemploPT.gid
+
+namespace eval EjemploPT {
+	variable D
+	variable B
+	variable ptDir
+}
+proc InitGIDProject { dir } {
+	EjemploPT::ModificarMenus
+	EjemploPT::GuardarDirPT
+	gid_groups_conds::open_conditions menu
+}
+proc EjemploPT::GuardarDirPT { dir } {
+	variable ptDir
+	set ptDir $dir
+}
+proc EjemploPT::ObtenerDirPT { } {
+	variable ptDir
+	return $ptDir
+}
+proc EjemploPT::ModificarMenus { } {
+	GiDMenu::InsertOption "Data" [list "Mostrar Data tree"] 0 PRE [list gid_groups_conds::open_conditions menu] "" "" replace =
+	GiDMenu::InsertOption "Data" [list "Mostrar Data tree"] 1 PRE [list EjemploPT::DibujarTrabe] "" "" replace =
+    GiDMenu::UpdateMenus
+}
+\end{lstlisting}
+
+La instrucción \textcolor{blue}{\texttt{gid\_groups\_conds::open\_conditions menu}}, \textcolor{blue}{\texttt{GiDMenu::InsertOption}} y \textcolor{blue}{\texttt{GiDMenu::UpdateMenus}} son rutinas definidas en GiD (definidas en el \textit{Customization Manual}, revisar sintaxis). La primera sirve para leer el archivo \texttt{EjemploPT\_default.spd} y crear una ventana gráfica con los datos leídos, esto es lo que se muestra en el Data Tree. La segunda sirve para agregar submenús en el menú \textit{Data}, agregamos un submenú para abrir el \textit{árbol de datos} (para abrir y cerrarlo) y otro submenú para dibujar (se define esta función más adelante). La tercera, para actualizar los cambios realizados. Si guardamos los cambios en el archivo y ejecutamos el problem type, se abrirá esta ventana:
+
+\begin{figure}[hbt!]\centering
+	\includegraphics[width=0.2\textwidth]{captura_data_tree.PNG}
+	\label{fig:estructura_spd}
+	\caption{Estructura del archivo \texttt{.spd} vista en el árbol de datos de GiD.}
+\end{figure}
+
+Si se ha mostrado la figura anterior, todo se ha cargado con éxito. Pero si se intenta abrir, se generará un error como el que sigue:
+
+\begin{figure}[hbt!]\centering
+	\includegraphics[width=0.35\textwidth]{error_ListaTrabes.PNG}
+	\label{fig:error_ListaTrabes}
+	\caption{Error cuando GiD no encuentra definida una función.}
+\end{figure}
+
+Esto ocurre cuando GiD encuentra la llamada a una función y no la encuentra definida en el archivo TCL. Por ello, la vamos a definir a continuación. Uno de los atributos de la etiqueta \texttt{$<$value$>$} es ``\texttt{values}'' (sección \ref{subsubsec:value}) en la cual transforma el campo de \texttt{value} en lista desplegable si se entrega una cadena de caracteres separados por comas. Entonces la función \textcolor{blue}{\texttt{ListaTrabes}} deberá regresar una lista y se define como sigue (se deberá escribir después de \texttt{InitGIDProject}
+
+\lstset{language=tcl} 
+\begin{lstlisting}
+proc EjemploPT::ListaTrabes { domNode args } {
+	return [list Tipo I , Tipo II , Tipo III , Tipo IV , Tipo V , Tipo VI]
+}
+\end{lstlisting}
+
+Se guardan los cambios y ahora sí se puede abrir la lista desplegable del \textit{árbol de datos}.
+
+\begin{figure}[hbt!]\centering
+	\includegraphics[width=0.25\textwidth]{lista_desplegable.PNG}
+	\label{fig:lista_desplegable}
+	\caption{Lista desplegable con los tipos de trabes.}
+\end{figure}
+
+Ahora se necesita crear la base de datos, para ello se crear una carpeta en el directorio del problem type llamada \texttt{xml} en el directorio del problem type (\texttt{EjemploPT.gid\textbackslash xml}) y almacenamos ahí el archivo (\texttt{basedatostrabes.xml}) donde estará los datos de la geometría (\texttt{blockdata}). El archivo ubicado en \texttt{EjemploPT.gid\textbackslash xml\textbackslash basedatostrabes.xml} quedaría de la siguiente manera:
+
+
+\lstset{language=XML} 
+\begin{lstlisting}[caption={Extracto de la base de datos de la geometría.}]
+<?xml version="1.0" encoding="utf-8"?>
+<container n="basedatostrabes" pn="Geometria Trabes">
+	<blockdata n="seccion" name="Tipo I">
+		<value n='d1' pn='D1' v='71'/>
+		<value n='d2' pn='D2' v='10'/>
+		<value n='d3' pn='D3' v='0'/>
+		<value n='d4' pn='D4' v='7.6'/>
+		<value n='d5' pn='D5' v='13'/>
+		<value n='d6' pn='D6' v='13'/>
+		<value n='b1' pn='B1' v='30'/>
+		<value n='b2' pn='B2' v='41'/>
+... etc
+</container>
+\end{lstlisting}
+
+Continuando con la escritura del archivo \texttt{.tcl}. Se deben hacer dos cosas:
+
+\begin{itemize}
+	\item Obtener el valor del tipo de trabe que seleccione el usuario desde el archivo \texttt{EjemploPT\_default.spd}.
+	\item Comparar ese valor con la etiqueta \textcolor{blue}{\texttt{name=}} coincidente de la base de datos y almacenar los datos.
+\end{itemize}
+
+La obtención se hace con el paquete \textbf{tdom}, que es un \textit{parser} (\textit{analizador sintáctico}) para XML en TCL, con su respectiva ruta \textbf{XPath}, descritos en secciones posteriores. El paquete se incluirá al principio del código:
+
+\lstset{language=tcl} 
+\begin{lstlisting}[caption={Código para inicializar el proyecto y crear el menú.}]
+# Proyecto EjemploPT.gid
+package require tdom; # Maneja el doc. XML
+namespace eval EjemploPT {
+	variable D
+	variable B
+}
+...
+\end{lstlisting}
+
+Ahora sí definimos la función \texttt{EjemploPT::DibujarTrabe}:
+
+\lstset{language=tcl} 
+\begin{lstlisting}[caption={Definición del procedimiento \texttt{EjemploPT::DibujarTrabe}}]
+proc EjemploPT::DibujarTrabe { } {
+	
+	variable D
+	variable B
+	set D [list ]
+	set B [list ]
+	set long 500.00
+	
+	set rootSPD [customlib::GetBaseRoot]
+	set tipoTrabe [get_domnode_attribute [$rootSPD selectNodes "\container\[@n='tipoTrabe'\]/value\[@n='tipo'\]"] v]
+	
+	set XPathBaseDatos [dom parse [tDOM::xmlReadFile [file join [EjemploPT::ObtenerDirPT] "xml/basedatostrabes.xml"]]]
+	set domTipoTrabe [$XPathBaseDatos selectNodes "//container\[@n='basedatostrabes'\]"]
+	
+	foreach domTipoTrabe [$domTipoTrabe childNodes] {
+		set strComp [$domTipoTrabe @name]
+		if { [string match $tipoTrabe $strComp ] == 1 } {
+			set nodoTipo $domTipoTrabe
+			break
+		}
+	}
+	
+	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d1'\]"] v]]
+	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d2'\]"] v]]
+	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d3'\]"] v]]
+	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d4'\]"] v]]
+	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d5'\]"] v]]
+	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d6'\]"] v]]
+	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b1'\]"] v]]
+	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b2'\]"] v]]
+	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b3'\]"] v]]
+	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b4'\]"] v]]
+	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b5'\]"] v]]
+	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b6'\]"] v]]
+	
+	GidUtils::DisableGraphics
+	GiD_Process Mescape Geometry Create Line 0.0,0.0 \
+											[expr [lindex $B 0]/2.0],0.0 \
+											[expr [lindex $B 0]/2.0],[expr -[lindex $D 1]] \
+											[expr [lindex $B 2]/2.0],[expr -[lindex $D 1]-[lindex $D 3]] \
+											[expr [lindex $B 2]/2.0],[expr -[lindex $D 0]+[lindex $D 4]+[lindex $D 5]] \
+											[expr [lindex $B 1]/2.0],[expr -[lindex $D 0]+[lindex $D 4]] \
+											[expr [lindex $B 1]/2.0],[expr -[lindex $D 0]] \
+											0.0,[expr -[lindex $D 0]] escape
+	GiD_Process Mescape Utilities Copy Lines MaintainLayers Mirror FNoJoin 0.0,0.0,0.0 FNoJoin 0.0,1.0,0.0 TwoDim 1 2 3 4 5 6 7 escape
+	GiD_Process Mescape Geometry Create NurbsSurface 1 2 3 4 5 6 7 8 9 10 11 12 13 14 escape
+	GiD_Process Mescape Utilities Copy Surfaces DoExtrude Volumes MaintainLayers Translation FJoin 1 FNoJoin 0.0,0.0,-500 1 escape
+	GiD_Process Mescape Utilities Copy Volumes MaintainLayers MCopy 5 Translation FJoin 1 FNoJoin 60.0,0.0,0.0 1 escape
+	GidUtils::EnableGraphics
+}
+\end{lstlisting}
 
 
 %----------------------------------------------------------------------------------------
