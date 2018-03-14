@@ -51,7 +51,7 @@ Este documento pretende ser un ``primer acercamiento'' a los problem types para 
 Cabe señalar que este material será sólo un apoyo para la \textit{customización}, no es un manual de usuario de GiD, este se puede encontrar en \textcolor{BlueGiD}{\underline{\url{www.gidhome.com/support/gid-manuals/}}} . En caso de tener dudas muy puntuales el material de apoyo es muy amplio y siempre se puede consultar el \textit{Manual de Customización} o directamente en los foros de ayuda en donde los desarrolladores de GiD ayudarán, el link es \textcolor{BlueGiD}{\underline{\url{www.gidhome.com/forum/}}}.
 
 \section{Primeros pasos}
-
+\label{sec:manualTCL}
 ¿Qué es lo que hace interesante GiD?. La respuesta es la \textbf{programación}, GiD está escrito para que sea de propósito general, de manera que los usuarios pueden crear sus propios solvers y manipular la información que sale y entra en él. Para explicar lo anterior, se tiene el siguiente diagrama:
 
 \begin{figure}[hbt!]\centering
@@ -207,16 +207,13 @@ Teniendo esto, abrimos \textit{GiD}, en el menú \textit{Data}>\textit{Problem t
 
 \section{Estructura de los archivos}
 
-En esta sección hablaré únicamente de la estructura y parámetros de configuración adecuada a los archivos que se describieron en \ref{tab:estructuraArchivos} para comenzar la personalización de GiD.
+En esta sección hablaré de la estructura y parámetros de configuración adecuados a los archivos que se describieron en \ref{tab:estructuraArchivos} para comenzar la personalización de GiD.
 
 \subsection{EjemploPT.xml}
 
 El archivo de configuración inicial XML, contiene datos generales del programa. Este archivo generalmente sólo se configura una sóla vez, ya que los datos sólo son informativos.
 
-Aunque el archivo es muy corto, la información es escencial, no se debe omitir ninguna etiqueta ni modificar los identificadores.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Existen más identificadores para moldear el problem type, pero estos identificadores son los esenciales para ejecutarlo:
+Aunque el archivo es muy corto, la información es esencial, no se debe omitir ninguna de estas etiquetas ni modificar los identificadores. Existen más etiquetas para darle más información a GiD sobre nuestro problem type, pero estas son de uso \textbf{obligatorio}.
 
 \lstset{language=XML} 
 \begin{lstlisting}
@@ -256,7 +253,6 @@ Para ramificar el árbol de datos, estas etiquetas pueden anidarse para contener
 
 Es \textbf{etiqueta principal y obligatoria} del archivo \texttt{.spd}. Contiene el número de versión y el nombre del problem type. Los caracteres \texttt{PT} deben ser remplazados por el nombre del problem type.
 
-\vspace{0.15cm}
 \vspace{0.15cm}
 \textit{Atributos}:
 
@@ -441,7 +437,71 @@ Así, TCL podrá leer y ejecutar la función \texttt{CalcularArea} misma que deb
 
 \subsection{EjemploPT.tcl}
 
-A diferencia de los archivos anteriores, que definen la estructura del problem type, el archivo \texttt{.tcl} define la lógica de esa estructura. Se definirán aquí, tanto los métodos 
+A diferencia de los archivos anteriores, que definen la estructura del problem type, el archivo \texttt{.tcl} define la lógica de esa estructura. El lenguaje de este archivo, como su extensión lo indica es \textbf{TCL/TK puro}. Toda la documentación acerca del lenguaje TCL se encuentra disponible en el manual que se mostró en la sección \ref{sec:manualTCL}.
+
+\subsubsection{Eventos}
+Como hemos visto anteriormente, hay etiquetas con un nombre específico que GiD interpreta para realizar diferentes acciones. Lo mismo sucede en el archivo \texttt{.tcl} pero con los \textbf{eventos}. Los eventos en la programación, son rutinas de código que se ejecutan cuando una acción se realiza durante el programa, mismas que el usuario invoca. Por ejemplo, cuando el usuario abre GiD, se deben ejecutar las funciones para cargar el área de dibujo, abrir la barra de herramientas, cargar el idioma y las preferencias del usuario,etc. Cuando se crea un problem type sucede lo mismo, pero a diferencia de los ejemplos anteriores, estas funciones ya se encuentran definidas por GiD y listas para editarse.
+
+La guía del uso de estas funciones se encuentran en el \textit{Customization Manual} contenido en esta bibliografía, pero aquí se mencionan las más importantes:
+
+\lstset{language=tcl} 
+\begin{lstlisting}
+proc InitGIDProject { dir } {
+}
+\end{lstlisting}
+
+\textit{Descripción}: Será llamada cuando se seleccione el problem type. Recibe el argumento \texttt{dir}, el cual es la ruta absoluta del directorio del problem type. Puede ser útil guardar \texttt{dir} para posteriormente  acceder a otros archivos dentro del directorio.
+
+\begin{lstlisting}
+proc SaveGIDProject { filespd } {
+}
+\end{lstlisting}
+
+\textit{Descripción}: Será llamada cuando el proyecto actual sea guardado en el disco duro. Recibe el argumento \texttt{filespd}, el cual es la ruta del archivo guardado, pero con extensión \texttt{.spd}.
+
+\subsubsection{Programación en TCL}
+
+Una vez seleccionadas las funciones que han de ejecutar, se deben escribir las funciones en TCL. Para ello se debe crear primero un \texttt{namespace}. Un \texttt{namespace} es un área de trabajo que permite particionar diferentes comandos y variables de otras áreas de trabajo. Esto será útil para separar las funciones que nosotros hemos de crear con las que ya están definidas por GiD y evitar la \textit{colisión de nombres}. Una vez creada el área de trabajo, podremos almacenar en esta todas nuestras variables y funciones propias del \texttt{namespace}.
+
+Para crear un \texttt{namespace} se utiliza el siguiente comando:
+
+\lstset{language=tcl} 
+\begin{lstlisting}
+namespace eval path {
+}
+\end{lstlisting}
+
+Donde \texttt{path} será la ruta (o identificador) del área de trabajo, en este caso ponermos el \textbf{nombre del problem type}. Dentro de las llaves usualmente se declaran todas las variables globales que estarán durante todo el problem type. Por ejemplo, para crear un \texttt{namespace} para \texttt{EjemploPT} escribiremos en el archivo \texttt{.tcl} lo siguiente:
+
+\lstset{language=tcl} 
+\begin{lstlisting}
+namespace eval EjemploPT {
+	variable radio
+}
+\end{lstlisting}
+
+Lo que hace el código anterior es crear el \texttt{namespace} para \texttt{EjemploPT} y crea una variable global llamada \texttt{radio}.
+
+En este ejemplo se crea una función (o proc) llamada \textcolor{blue}{\texttt{CalcularAreaCirculo}} en el \texttt{namespace} de \texttt{EjemploPT}. Llama la variable global \texttt{radio} y almacena el valor de \texttt{5.00} y la función regresa el valor del área de un círculo:
+
+\lstset{language=tcl} 
+\begin{lstlisting}
+proc EjemploPT::CalcularAreaCirculo { } {
+	variable radio	
+	set radio 5.00
+	return [expr $radio*$radio*3.14159265359]
+}
+\end{lstlisting}
+
+ 
+\section{Problem type: EjemploPT.gid}
+
+Orientaré esta manual a solo un ejemplo: \textbf{hacer un problem type para dibujar un conjunto secciones de trabes AASHTO, seleccionando el tipo mediante listas desplegables en el árbol de datos}. Se trabajará únicamente con los archivos \texttt{.tcl} y \texttt{.spd} ya que el archivo \texttt{.xml} sólo es de configuración.
+
+\subsection{Consideraciones generales}
+
+Se
+
 
 
 %----------------------------------------------------------------------------------------
