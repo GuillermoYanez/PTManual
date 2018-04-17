@@ -49,6 +49,10 @@
 \usepackage{sectsty} % Enables custom section titles
 \allsectionsfont{\usefont{OT1}{phv}{b}{n}} % Change the font of all section commands (Helvetica)
 
+\usepackage{appendix}
+\renewcommand{\appendixname}{Anexos}
+\renewcommand{\appendixtocname}{Anexos}
+\renewcommand{\appendixpagename}{Anexos}
 
 \usepackage{listings}
 %----------------------------------------------------------------------------------------
@@ -174,9 +178,9 @@
 \rhead{} % Right header
 
 % Footers
-\lfoot{} % Left footer
-\cfoot{} % Center footer
-\rfoot{\footnotesize Page \thepage\ of \pageref{LastPage}} % Right footer, "Page 1 of 2"
+\lfoot{\footnotesize \textit{Aula CIMNE UG}} % Left footer
+\cfoot{\footnotesize \textit{Luis G. Yáñez Rodríguez}} % Center footer
+\rfoot{\footnotesize Página \thepage\ de \pageref{LastPage}} % Right footer, "Page 1 of 2"
 
 \fancypagestyle{firstpage}{ % Page style for the first page with the title
 	\fancyhf{}
