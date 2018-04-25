@@ -520,7 +520,7 @@ A diferencia de los archivos anteriores, que definen la estructura del problem t
 
 \subsubsection{Eventos} \label{sec:eventosGiD}
 
-Como vimos en XML, hay etiquetas con un nombre específico que GiD interpreta para realizar diferentes acciones. Lo mismo sucede en el archivo \texttt{.tcl} pero con los \textbf{eventos}. Los \textit{eventos} en la programación, son rutinas de código que se ejecutan cuando una acción se realiza durante el programa, mismas que el usuario invoca. Por ejemplo, cuando el usuario abre GiD, suceden eventos para cargar el área de dibujo, abrir la barra de herramientas, cargar el idioma y las preferencias del usuario, etc. Cuando se crea un problem type ocurre lo mismo a diferencia de que estas funciones ya se encuentran definidas por GiD y listas para editarse.
+Como vimos en XML, hay etiquetas con un nombre específico que GiD interpreta para realizar diferentes acciones. Lo mismo sucede en el archivo \texttt{.tcl} pero con los \textbf{eventos}. Los \textit{eventos} en la programación, son rutinas de código que se ejecutan cuando una acción se realiza durante el programa, mismas que el usuario invoca. Por ejemplo, cuando el usuario abre GiD, suceden eventos para cargar el área de dibujo, abrir la barra de herramientas, cargar el idioma y las preferencias del usuario, etc. Cuando se crea un problem type hay eventos definidos por GiD listas para editarse.
 
 La guía del uso de estas funciones se encuentran en el \textit{Customization Manual} contenido en la referencia de este documento, pero aquí se mencionan solo dos, el evento \textcolor{blue}{\texttt{InitGIDProject}} y \textcolor{blue}{\texttt{SaveGIDProject}}:
 
@@ -531,7 +531,7 @@ proc InitGIDProject { dir } {
 }
 \end{lstlisting}
 
-\textit{Descripción}: Será llamada cuando se seleccione el problem type. Recibe el argumento \texttt{dir}, el cual es la ruta absoluta del directorio del problem type. Es muy útil guardar \texttt{dir} para posteriormente  acceder a otros archivos dentro del directorio como lo haremos más adelante.
+\textit{Descripción}: Será llamada cuando se seleccione el problem type. Recibe el argumento \texttt{dir}, el cual es la ruta absoluta del directorio del problem type. Es muy útil guardar \texttt{dir} como lo haremos más adelante.
 
 \begin{lstlisting}[caption={Evento que se ejecuta al guardar un proyecto en GiD durante la ejecución de un problem type.}]
 proc SaveGIDProject { filespd } {
