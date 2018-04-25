@@ -1,72 +1,73 @@
-\documentclass[10pt, a4paper, twocolumn]{article} % 10pt font size (11 and 12 also possible), A4 paper (letterpaper for US letter) and two column layout (remove for one column)
+\documentclass[10pt, a4paper, twocolumn]{article}
 
-\input{structure.tex} % Specifies the document structure and loads requires packages
+\input{structure.tex}
 
 %----------------------------------------------------------------------------------------
-%	ARTICLE INFORMATION
+%	INFORMACIÓN DEL MATERIAL
 %----------------------------------------------------------------------------------------
 
-\title{Primer acercamiento al desarrollo de Problem Types en GiD} % The article title
+\title{Primer acercamiento al desarrollo de Problem Types en GiD}
 
 \author{
 	\authorstyle{Luis G. Yáñez Rodríguez\textsuperscript{1}} % Authors
-	\newline\newline % Space before instittions
-	\textsuperscript{1}\institution{[Aula CIMNE UG] Universidad de Guanajuato, Guanajuato, México}\\ % Institution 1
+	\newline\newline
+	\textsuperscript{1}\institution{[Aula CIMNE-UG] Universidad de Guanajuato, Guanajuato, México}\\
 }
 
-% Example of a one line author/institution relationship
-%\author{\newauthor{John Marston} \newinstitution{Universidad Nacional Autónoma de México, Mexico City, Mexico}}
 
-\date{Febrero, 2018} % Add a date here if you would like one to appear underneath the title block, use \today for the current date, leave empty for no date
+
+\date{Abril, 2018}
 
 %----------------------------------------------------------------------------------------
 
 \begin{document}
 
-\maketitle % Print the title
+\maketitle
 
-\thispagestyle{firstpage} % Apply the page style for the first page (no headers and footers)
+\thispagestyle{firstpage}
 
 %----------------------------------------------------------------------------------------
-%	ABSTRACT
+%	RESUMEN
 %----------------------------------------------------------------------------------------
 
-\lettrineabstract{Sin duda los modelos computacionales nos han permitido entender el mundo que nos rodea. Ya sea para explicar un fenómeno o poder predecirlo. Parte del éxito de estas soluciones tiene que ver con la presentación de los resultados numéricos (post proceso) de forma limpia y ordenada. Estos últimos por su parte se resumen en ``ceros y unos'' y el post proceso pretende llevarlos de forma más atractiva al usuario. Existen muchos softwares que ayudan en esta etapa del método computacional, pero entre ellos destaca uno en particular llamado GiD, The personal pre and post processor, desarrollado por el Centro Internacional de Métodos Numéricos en Ingenierías (CIMNE), el cual que permite trasladar un problema a una abstracción computacional.}
+\lettrineabstract{Sin duda los modelos computacionales nos han permitido entender el mundo que nos rodea. Ya sea para explicar un fenómeno o poder predecirlo. Parte del éxito de estas soluciones es la presentación y visualización de los resultados numéricos (post proceso). Ya que estos se resumen en ``ceros y unos'' el post proceso pretende llevarlos al usuario de forma más atractiva. Existen muchos softwares que ayudan en esta etapa, pero entre ellos destaca uno en particular llamado GiD, The personal pre and post processor, desarrollado por el Centro Internacional de Métodos Numéricos en Ingenierías (CIMNE), el cual que permite trasladar un problema a la abstracción computacional.}
 
 \section{Justificación}
 
-Cuando se usa GiD para un análisis en particular, es necesario establecer los parámetros a los que el modelo estará sujeto (pre proceso). En esta parte se definen las condiciones, materiales, datos generales, sistema de unidades, símbolos y el formato del archivo de salida para el solver\footnote{Conjunto técnicas matemáticas implementadas en un lenguaje de programación para resolver un problema numérico en específico.}. Gracias a la característica de adaptación de \textit{GiD}se tiene una colección de archivos llamada \textbf{Problem Type} que definen los parámetros anteriores. Actualmente la documentación disponible acerca del desarrollo de problem types se encuentra en el idioma inglés, lo cual puede ser una limitante para aquellos que quieran incursionar en estas herramientas. 
+Cuando se usa GiD para un análisis en particular, es necesario establecer los parámetros a los que el modelo estará sujeto (pre proceso). En esta parte se definen las condiciones, materiales, datos generales, sistema de unidades, símbolos y el formato del archivo de salida para el solver\footnote{Conjunto técnicas matemáticas implementadas en un lenguaje de programación para resolver un problema numérico en específico.}. Gracias a la característica de adaptación de \textit{GiD} se puede definir una colección de archivos llamada \textbf{Problem Type} que establecen los parámetros anteriores de manera visual. Actualmente la documentación disponible acerca del desarrollo de problem types se encuentra en idioma inglés lo cual puede ser una limitante para aquellos que quieran incursionar en estas herramientas. 
 
 \begin{figure}[hbt!]\centering
-	\includegraphics[width=0.2\textwidth]{logoGiD.PNG}
-	\caption{Logo de GiD.}
+	\includegraphics[width=0.3\textwidth]{logoGiD.PNG}
+	\caption{Logo de software GiD.}
 \end{figure}
 
 \subsection{Objetivo}
 
-Este documento pretende ser un ``primer acercamiento'' personalización del software GiD (problem types) para personas de habla hispana en donde tal vez no encuentren toda la información pero sí sea una buena referencia.
+Este documento pretende ser un ``primer acercamiento'' a la personalización del software GiD dirigido a personas de habla hispana en donde encuentren los pasos básicos para crear un problem type.
 
 \subsection{Aplicación}
 
-Cabe señalar que este material será sólo un apoyo para la \textit{customización}, no es un manual de usuario de GiD, este se puede encontrar en \textcolor{BlueGiD}{\underline{\url{www.gidhome.com/support/gid-manuals/}}}. En caso de tener dudas muy puntuales el \textit{Manual de Customización} es muy amplio y también se puede consultar directamente los foros de ayuda de GiD, el link es \textcolor{BlueGiD}{\underline{\url{www.gidhome.com/forum/}}}.
+Cabe señalar que este material está enfocado a la generación de geometrías mediante código de programación. Además se enfoca a la \textit{personalización} de GiD, por lo que no es un manual de usuario. Este último se puede encontrar en \textcolor{BlueGiD}{\underline{\url{www.gidhome.com/support/gid-manuals/}}}. En caso de surgir dudas puntuales el \textit{Customization Manual} es muy amplio. Adicionalmente se puede consultar los foros de ayuda de GiD, el link es \textcolor{BlueGiD}{\underline{\url{www.gidhome.com/forum/}}}.
 
-\section{Primeros pasos} \label{sec:manualTCL}
+\newpage
 
-¿Qué es lo que hace interesante GiD?. La respuesta es la \textbf{programación}, GiD está escrito para que sea de propósito general, de manera que los usuarios pueden crear sus propios solvers y manipular la información que sale y entra en él. Para explicar lo anterior, se tiene el siguiente diagrama:
+\section{Primeros pasos}
+
+¿Qué es lo que hace interesante GiD?. La respuesta es la \textbf{programación}, GiD está escrito para que sea de propósito general, de manera que los usuarios pueden crear sus propios solvers y manipular la información que entra y sale de él. Para explicar lo anterior, se tiene el siguiente diagrama:
 
 \begin{figure}[hbtp!]
 	\centering
 	\includegraphics[width=0.35\textwidth]{etapasGiD.PNG}
-	\caption{Diagrama de los procesos que realiza un Problem Type.\label{fig:diagramaProcesos}}
+	\caption{Diagrama del proceso que realiza un Problem Type.\label{fig:diagramaProcesos}}
 \end{figure}
 
-La manera como se desarrollaban anteriormente los problem types no era tan interactiva con el usuario, imposibilitando personalizar la entrada y salida de datos. Desde la \textit{versión 13} de GiD, se ha implementado una nueva versión de problem type (basado en la librería CustoLIB) y aunque el sistema ``clásico'' sigue siendo soportado por GiD, esta nueva versión usa un único archivo \texttt{.spd} para describir las propiedades generales, materiales, condiciones y unidades (como un árbol en la sintaxis de \textbf{XML}). Toda esta información se muestra en una ``vista de árbol'' y los materiales y condiciones son asociados en grupos de entidades estos son leídos y procesados mediante el lenguaje de programación \textbf{TCL/Tk} orientado a objetos que permitirá crear interfaces gráficas de usuario (GUI) y darle un mejor aspecto a los problem types.
+La manera como se desarrollaban anteriormente los problem types no era tan interactiva con el usuario, impidiendo personalizar la entrada y salida de datos. Desde la \textit{versión 13} de GiD se ha implementado una nueva versión de problem type (basado en la librería CustomLIB) y aunque el sistema ``clásico'' sigue siendo soportado por GiD, esta nueva versión usa un único archivo con extensión \texttt{.spd} (basado en XML) para describir las propiedades generales, materiales, condiciones y unidades. Toda esta información se muestra en una ``vista de árbol'' y los materiales y condiciones son asociados en grupos de entidades los cuales son leídos y procesados mediante el lenguaje de programación \textbf{TCL/Tk} (orientado a objetos) que permitirá crear interfaces gráficas de usuario (GUI) y darle un mejor aspecto a los problem types.
 
-La combinación de TCL/Tk y XML, definirá el rumbo que el usuario le de a su problem type, es por ello que es importante leer y aprender de estas dos herramientos. Ya que no es el objeto de este material una buena guía para TCL se puede encontrar en: \textcolor{BlueGiD}{\underline{\url{www.tcl.tk/doc/}}}, y para XML en: \textcolor{BlueGiD}{\underline{\url{www.w3schools.com/xml/}}}.
+La combinación de TCL/Tk y XML, definirá el rumbo que el usuario le de a su problem type, es por ello que es importante leer y aprender de estas dos herramientas. Como no es el objeto de este material una buena guía para TCL se puede encontrar en: \textcolor{BlueGiD}{\underline{\url{www.tcl.tk/doc/}}\label{sec:manualTCL}}, y para XML en: \textcolor{BlueGiD}{\underline{\url{www.w3schools.com/xml/}}}.
 
 \subsection{El sistema del problem type}
 
-Como ya se dijo, un problem type es una colección de archivos, los cuales permiten al usuario establecer los parámetros de entrada para un problema computacional, a este proceso también se le conoce como \textit{personalización} en GiD. 
+Un problem type es una colección de archivos, los cuales permiten al usuario establecer los parámetros de entrada para un problema computacional, a este proceso también se le conoce como \textit{personalización} en GiD. 
 
 El nuevo sistema para la personalización agrega algunas capacidades adicionales comparado con el sistema clásico:
 
@@ -103,6 +104,7 @@ Cabe mencionar que GiD tiene su editor de TCL incluido (\textit{Data}>\textit{Pr
 			\item No es un lenguaje para hacer páginas Web.
 			\item No es difícil.
 		\end{itemize}
+		\newpage
 	\item ¿POR QUÉ XML?
 		\begin{itemize}
 			\item Es un estándar internacionalmente conocido.
@@ -164,11 +166,11 @@ proc ProgramaPrincipal { } {
 
 \subsection{Estructura del problem type}
 
-Un problem type se define creando una carpeta cuyo nombre será definido por el usuario, seguido de la extensión ''\textbf{.gid}´´ y en esta se colocarán una serie de archivos que tendrán una estructura específica. A modo de ejemplo en este manual se creará uno llamado \textbf{\texttt{EjemploPT.gid}}.
+Un problem type se define creando una carpeta cuyo nombre será definido por el usuario, seguido de la extensión ''\textbf{.gid}´´ y en esta se colocarán una serie de archivos que tendrán una estructura específica. \textbf{A modo de ejemplo en este manual se creará uno llamado \texttt{EjemploPT.gid}}.
 
 \textcolor{red}{\textbf{¡IMPORTANTE!}:}El nombre de la carpeta deberá ser respetado, no se permitirán modificaciones como intercambiar mayúsculas con minúsculas, agregar texto o números, etc. Esto podría causar un conflicto en los nombres.
 
-La carpeta del problem type creada se deberá ubicar en el directorio \textbf{problemtypes} de la distribución \textit{GiD} que se tenga instalado en la computadora, por ejemplo en caso que sea la versión \texttt{13.1.0d} en Windows, se debe colocar la carpeta \textbf{\texttt{EjemploPT.gid}} en la dirección:
+La carpeta del problem type creada se deberá ubicar en el directorio \textbf{problemtypes} de la distribución \textit{GiD} que se tenga instalado en la computadora, por ejemplo en caso que sea la versión \texttt{13.x} en Windows, se debe colocar la carpeta \textbf{\texttt{EjemploPT.gid}} en la dirección:
 
 \begin{small}
 \begin{verbatim}
@@ -176,7 +178,7 @@ C:\Archivos de programa\GiD\GiD 13.x\problemtypes
 \end{verbatim}
 \end{small}
 
-\textcolor{purple}{\textbf{TIP}:} Como se estará modificando el contenido de una carpeta contenida \textit{Archivos de programa} (suponiendo que se trabaja en Windows), el editor solicitará permisos de \textit{administrador} cada que se modifiquen los archivos. Esto será demasiadas veces y puede ser poco eficiente otorgar permisos. Para ello se recomienda colocar la carpeta del problem type en una ubicación que no sea \textit{Archivos de programa} (Escritorio, Documentos, etc.), copiar esta carpeta y pegar el \textit{acceso directo} (Click derecho>Pegar acceso directo) en el directorio de los problem types, mencionado anteriormente, editando el nombre para que no aparezca ``\texttt{EjemploPT.gid - Acceso directo}'' y tenga solo el nombre``\texttt{EjemploPT.gid}''.
+\textcolor{purple}{\textbf{TIP}:} Como se estará modificando el contenido de una carpeta contenida \textit{Archivos de programa} (suponiendo que se trabaja en Windows), el editor solicitará permisos de \textit{administrador} cada que se modifiquen los archivos. Esto será demasiadas veces y puede ser poco eficiente el otorgar permisos. Para ello se recomienda colocar la carpeta del problem type en una ubicación que no sea \textit{Archivos de programa} (Escritorio, Documentos, etc.), copiar esta carpeta y pegar el \textit{acceso directo} (Click derecho>Pegar acceso directo) en el directorio de los problem types, editando el nombre para que no aparezca ``\texttt{EjemploPT.gid - Acceso directo}'' y tenga solo el nombre ``\texttt{EjemploPT.gid}''.
 
 Una vez colocada la carpeta en la dirección anterior, con ayuda del editor de texto se crean y colocan en ella los siguientes archivos:
 
@@ -191,7 +193,7 @@ Una vez colocada la carpeta en la dirección anterior, con ayuda del editor de t
 	\caption{Archivos contenidos en \textbf{\texttt{EjemploPT.gid}} para inicializar el problem type.\label{tab:estructuraArchivos}}
 \end{table}
 
-De modo que el directorio del problem type se vería así:
+El directorio del problem type debe quedar así:
 
 \begin{verbatim}
 	EjemploPT.gid\
@@ -201,24 +203,24 @@ De modo que el directorio del problem type se vería así:
 	EjemploPT.gid\EjemploPT.xml
 \end{verbatim}
 
-Posteriormente abrimos \textit{GiD} y en el menú \textit{Data}>\textit{Problem type} se debe encontrar el problem type \textbf{\texttt{EjemploPT}} que hemos creado aunque no hayamos escrito nada en estos archivos. Si al seleccionarlo no se ha producido ningún error, \textbf{los archivos se han cargado satisfactoriamente}.
+Posteriormente abrimos \textit{GiD} y en el menú \textit{Data}>\textit{Problem type} se debe encontrar el que recién se creó (\textbf{\texttt{EjemploPT}}) sin importar que no se ha escrito nada en estos archivos. Si al seleccionarlo no se ha producido ningún error, \textbf{los archivos se han cargado satisfactoriamente}.
 
 \section{Estructura de los archivos}
 
-En esta sección hablaré de la estructura y parámetros de configuración adecuados a los archivos que se describieron en el Cuadro~\ref{tab:estructuraArchivos} para comenzar la personalización de GiD.
+En esta sección hablaré de la estructura y parámetros de configuración adecuados a los archivos que se describieron en el Cuadro~\ref{tab:estructuraArchivos}.
 
 \subsection{EjemploPT.cnd}
 
-\textcolor{blue}{\textbf{NOTA}:}Este material no se enfocará a la definición de este archivo, si bien es necesario para establecer las condiciones de contorno, no es necesario para abrir un problem type. Este material está enfocado a generación de geometrías. Aquí se detallará la estructura básica, de requerirse a detalle más opciones, consultar el \textit{Customization Manual}. En este ejemplo no se incluye el arhivo \texttt{EjemploPT.cnd}.
+\textcolor{red}{\textbf{NOTA}:}Este material no se enfocará a la definición de este archivo, si bien es necesario para establecer las condiciones de contorno, no es necesario para abrir un problem type, por lo tanto \textcolor{blue}{\textbf{en el ejemplo de este material NO se incluye el arhivo \texttt{EjemploPT.cnd}}} debido a que \textbf{este material está enfocado a generación de geometrías}. Aquí se detallará la estructura básica, de requerirse a detalle más opciones, consultar el \textit{Customization Manual}.
 
-Se escriben en un archivo \texttt{.cnd} el cual contiene toda la información que puede ser aplicada a las diferentes entidades (puntos, líneas, superficies y volúmenes). Este tipo de información incluye por ejemplo, todos las restricciones de desplazamiento y cargas aplicadas en un problema estructural o las temperaturas iniciales y prescritas en un análisis térmico.
+Se escribe en un archivo \texttt{.cnd} toda la información que puede ser aplicada a las diferentes entidades (puntos, líneas, superficies y volúmenes). Este tipo de información incluye por ejemplo, las restricciones de desplazamiento y cargas aplicadas en un problema estructural o las temperaturas iniciales y prescritas en un análisis térmico.
 
-Una característica importante de las condiciones es que se debe definir a qué tipo de entidad será aplicada, por ejemplo: sobre puntos (\textit{over points}), sobre líneas (\textit{over lines}), sobre superficies (\textit{over surfaces}), sobre volúmenes (\textit{over volumes}), sobre capas (\textit{over layers}) o sobre grupos (\textit{over groups})y qué tipo de entidad de la malla serán transmitidas: sobre nodos (\textit{over nodes}), sobre la cara de los elementos (\textit{over face elements}) o sobre cuerpos de elementos (\textit{over body elements}).
+Una característica importante de las condiciones es que se debe seleccionar a qué tipo de entidad será aplicada, por ejemplo: sobre puntos (\textit{over points}), sobre líneas (\textit{over lines}), sobre superficies (\textit{over surfaces}), sobre volúmenes (\textit{over volumes}), sobre capas (\textit{over layers}) o sobre grupos (\textit{over groups})y sobre qué tipo de entidad de la malla serán transmitidas: sobre nodos (\textit{over nodes}), sobre la cara de los elementos (\textit{over face elements}) o sobre cuerpos de elementos (\textit{over body elements}).
 
 \begin{itemize}
 \item \textbf{over nodes}: Significa que la condición será transferida a los nodos contenidos en la entidad geométrica donde la condición es asignada.
-\item \textbf{over face elements ?multiple?}: Si esta condición es aplicadaa una línea que es el límite de una superficie o a una superficie que es límite de un volúmen, esta condición es transferida a los elementos superiores, marcando la cara afectada. Si es daclarada como \textbf{multiple}, puede ser transferida a más de una cara de elemento (si existe más de una). Por default es considerada como \textbf{single}, y solo una cara del elemtnso será marcada.
-\item \textbf{over body elements}: Si esta condición es aplicada a líneas, será transferida a los elementos línea. Si se asigna a superficies, será trasferida a elementos superficie. Del mismo modo si se aplica para volúmenes, será transferida a elementos volumen.
+\item \textbf{over face elements ?multiple?}: Si esta condición es aplicada una línea que es el límite de una superficie o a una superficie que es límite de un volumen, esta condición es transferida a los elementos superiores, marcando la cara afectada. Si es declarada como \textbf{múltiple}, puede ser transferida a más de una cara de elemento (si existe más de una). Por default es considerada como \textbf{single}, y solo una cara del elemento será marcada.
+\item \textbf{over body elements}: Si esta condición es aplicada a líneas, será transferida a los elementos línea. Si se asigna a superficies, será trasferida a elementos superficie. Y como se puede intuir si se aplica para volúmenes, será transferida a elementos volumen.
 \end{itemize}
 
 El formato del archivo es como sigue:
@@ -241,16 +243,16 @@ CONDITION: condition_name
 END CONDITION
 \end{lstlisting}
 
-\textbf{Nota}: CONDTYPE y CONDMESHTYPE son obligatorios, y solo se debe establecer un typo.\\
+\textbf{Nota}: CONDTYPE y CONDMESHTYPE son obligatorios, y solo se debe establecer uno de estos dos.\\
 \textbf{Nota}: GROUPALLOW es válido solo para las condiciones ``over groups'', es un campo opcional para restringir categorías permitidas de entidades del grupo listado (si este campo se omite entonces todas las entidades están permitidas). Puede establecerse una lista de múltiples tipos.\\
 \textbf{Nota}: \#CB\# significa Combo Box, el cual es un elemento que muestra una lista desplegable.\\
 \textbf{Nota}: \#WIDTH\# significa el tamaño de la entrada usado por el usuario para ingresar el valor de la condición. Especifica un valor entero indicando el ancho deseado de la ventana de entrada.\\
 
 \subsection{EjemploPT.xml}\label{sec:codigoXML}
 
-El archivo de configuración inicial XML, contiene datos generales del programa. Este archivo generalmente sólo se configura una sóla vez, ya que los datos sólo son informativos.
+El archivo de configuración inicial XML, contiene datos generales del programa. Este archivo generalmente sólo se configura una sola vez porque los datos sólo son informativos.
 
-Aunque el archivo es muy corto, la información es esencial, no se debe omitir ninguna de estas etiquetas ni modificar los identificadores. Existen más etiquetas para darle más información a GiD sobre nuestro problem type, pero las siguientes son de uso \textbf{obligatorio}.
+Aunque el archivo es muy corto la información es esencial, no se debe omitir ninguna de estas etiquetas ni modificar los identificadores. Existen más etiquetas para darle más información a GiD sobre nuestro problem type, pero las siguientes son de uso \textbf{obligatorio}.
 
 \lstset{language=XML} 
 \begin{lstlisting}
@@ -265,15 +267,15 @@ Aunque el archivo es muy corto, la información es esencial, no se debe omitir n
 </Infoproblemtype>
 \end{lstlisting}
 
-\textcolor{blue}{NOTA:} Cabe señalar que la \textit{etiqueta} \texttt{\textcolor{darkblue}{CustomLibAutomatic}} debe tener el valor de \texttt{\textcolor{darkblue}{1}} (uno). Este activa el uso de la librería \textit{CustomLib} que permite acceder a funciones del nuevo sistema de problem types.
-
+\textcolor{blue}{NOTA:} La \textit{etiqueta} \texttt{\textcolor{blue}{CustomLibAutomatic}} debe tener el valor de \texttt{\textcolor{blue}{1}} (uno). Este activa el uso de la librería \textit{CustomLib} que permite acceder a funciones del nuevo sistema de problem types.
+\newpage
 \subsection{EjemploPT\_default.spd}
 
-Este archivo define la configuración principal del \textit{Árbol de datos} (\textit{Data tree}, en inglés), cuyo fin es estructurar las condiciones, materiales y otros datos del modelo computacional.
+Este archivo define la configuración principal del \textit{Árbol de datos} (\textit{Data tree}, en inglés), cuyo fin es estructurar las condiciones, materiales y otros datos del modelo computacional. Está basado en XML.
 
 En XML podemos crear \textit{campos o etiquetas} con cualquier nombre, para almacenar diferentes datos estos identificadores. En la programación de problem types, los nombres de estos campos o etiquetas ya se encuentran reservados y son leídos e interpretados por GiD para que pueda crear elementos visuales (listas desplegables, menú estructurado, etc.). En la documentación de GiD se describe la estructura adecuada para estas \textit{etiquetas}.
 
-Para ramificar el árbol de datos, estas etiquetas pueden anidarse para contener objetos dentro de otros. En este manual solo se describen algunas de ellas. La estructuración del problem type de ejemplo se verá en secciones posteriores:
+Para ramificar el árbol de datos, estas etiquetas pueden anidarse para contener objetos dentro de otros. La estructura que se le dará al ejemplo de este material se verá más adelante pero aquí se comienza a ejemplificar. En este manual solo se describen algunas de ellas:
 
 \subsubsection{$<$PT\_data$>$}
 
@@ -283,7 +285,7 @@ Para ramificar el árbol de datos, estas etiquetas pueden anidarse para contener
 \end{center}
 \vspace{0.20cm}
 
-Es \textbf{etiqueta principal y obligatoria} del archivo \texttt{.spd}. Contiene el número de versión y el nombre del problem type. Los caracteres \texttt{PT} deben ser remplazados por el nombre del problem type. A su vez este elemento/etiqueta es la \textbf{raíz} (root) del archivo \texttt{EjemploPT\_default.spd} (se retomará más adelante).
+Es \textbf{etiqueta principal y obligatoria} del archivo \texttt{.spd}. Dentro de esta se almacenará la estructura del problem type también contiene el número de versión. Los caracteres \texttt{PT} deben ser remplazados por el nombre del problem type. A su vez este elemento/etiqueta es la \textbf{raíz} (root) del archivo \texttt{EjemploPT\_default.spd} (se retomará más adelante).
 
 \vspace{0.15cm}
 \textit{Atributos}:
@@ -292,7 +294,7 @@ Es \textbf{etiqueta principal y obligatoria} del archivo \texttt{.spd}. Contiene
 	\textbf{version} - Número de versión interno.
 \vspace{0.15cm}
 
-Como el problem type se llama \texttt{EjemploPT}, el nodo principal es:
+Como el problem type que crearemos se llama \texttt{EjemploPT}, la etiqueta quedaría:
 
 \lstset{language=XML} 
 \begin{lstlisting}[caption={Etiqueta principal que contiene la estructura del PT.}]
@@ -429,7 +431,7 @@ Representa un arreglo de propiedades con algún tipo de relación. Un campo ``\t
 
 \subsubsection{$<$procs$>$ y $<$proc$>$} \label{sec:calculararea}
 
-\textcolor{red}{\textbf{¡IMPORTANTE!}:} Antes de explicar las etiquetas \texttt{$<$procs$>$} y \texttt{$<$proc$>$} se debe explicar el uso de las \textbf{secciones \texttt{CDATA}}. En un documento XML, una sección \texttt{CDATA} (del inglés, \textbf{character data}) es aquella perteneciente a un documento que es marcado para que el \textit{analizador sintáctico} lo interprete como una cadena de caracteres y no como contenido etiquetado. No hay diferencia semántica entre una cadena de caracteres dentro de una sección \texttt{CDATA} y la sintaxis usual en la que ``$<$'', ``$>$'' y ``$\&$'' estarían representados por ``\texttt{\&lt}'', ``\texttt{\&gt}'' y ``\texttt{\&amp}'' respectivamente.
+\textcolor{red}{\textbf{¡IMPORTANTE!}:} Antes de explicar las etiquetas \texttt{$<$procs$>$} y \texttt{$<$proc$>$} se debe describir el uso de las \textbf{secciones \texttt{CDATA}}. En un documento XML, una sección \texttt{CDATA} (del inglés, \textbf{character data}) es aquella perteneciente a un documento que es marcado para que el \textit{analizador sintáctico} lo interprete como una cadena de caracteres y no como contenido etiquetado. No hay diferencia semántica entre una cadena de caracteres dentro de una sección \texttt{CDATA} y la sintaxis usual en la que ``$<$'', ``$>$'' y ``$\&$'' estarían representados por ``\texttt{\&lt}'', ``\texttt{\&gt}'' y ``\texttt{\&amp}'' respectivamente.
 
 Una sección \texttt{CDATA} empieza con la siguiente secuencia:
 
@@ -477,7 +479,7 @@ Es interpretado como si se hubiera escrito así:
 \end{center}
 \vspace{0.20cm}
 
-La etiqueta \texttt{$<$procs$>$} \textbf{agrupa las declaraciones de los procedimientos} o funciones (\texttt{procs}) de TCL que se ejecutarán desde el árbol de datos. En cambio con la etiqueta \texttt{$<$proc$>$} \textbf{se declaran} como tal. En el archivo \texttt{.tcl} se definen, como veremos más adelante.
+La etiqueta \texttt{$<$procs$>$} \textbf{agrupa las declaraciones de los procedimientos} o funciones (\texttt{procs}) de TCL que se ejecutarán desde el árbol de datos. En cambio con la etiqueta \texttt{$<$proc$>$} \textbf{se declaran}.
 
 La etiqueta \texttt{$<$procs$>$} no lleva ningún atributo. La etiqueta \texttt{$<$proc$>$} lleva los siguientes atributos:
 
@@ -509,7 +511,7 @@ La etiqueta \texttt{$<$procs$>$} no lleva ningún atributo. La etiqueta \texttt{
 </procs>
 \end{lstlisting}
 
-Así, TCL podrá leer y ejecutar una función llamada \texttt{CalcularArea}, que será definida en la sección que sigue con ayuda de las funciones \texttt{CustomLib}.
+Así, TCL podrá leer y ejecutar una función llamada \texttt{CalcularArea}, que será definida en la sección que sigue con ayuda de las funciones \texttt{CustomLib}. Nótese que se deben incluir los argumentos \textcolor{blue}{\texttt{domNode args}} a la función para indicarle a TCL que se leerá desde un archivo XML. No olvidar incluirlos en la definición de la función. 
 
 
 \subsection{EjemploPT.tcl}
@@ -518,9 +520,9 @@ A diferencia de los archivos anteriores, que definen la estructura del problem t
 
 \subsubsection{Eventos} \label{sec:eventosGiD}
 
-Como hemos visto anteriormente, hay etiquetas con un nombre específico que GiD interpreta para realizar diferentes acciones. Lo mismo sucede en el archivo \texttt{.tcl} pero con los \textbf{eventos}. Los \textit{eventos} en la programación, son rutinas de código que se ejecutan cuando una acción se realiza durante el programa, mismas que el usuario invoca. Por ejemplo, cuando el usuario abre GiD, suceden eventos para cargar el área de dibujo, abrir la barra de herramientas, cargar el idioma y las preferencias del usuario, etc. Cuando se crea un problem type ocurre lo mismo pero a diferencia de que estas funciones ya se encuentran definidas por GiD y listas para editarse.
+Como vimos en XML, hay etiquetas con un nombre específico que GiD interpreta para realizar diferentes acciones. Lo mismo sucede en el archivo \texttt{.tcl} pero con los \textbf{eventos}. Los \textit{eventos} en la programación, son rutinas de código que se ejecutan cuando una acción se realiza durante el programa, mismas que el usuario invoca. Por ejemplo, cuando el usuario abre GiD, suceden eventos para cargar el área de dibujo, abrir la barra de herramientas, cargar el idioma y las preferencias del usuario, etc. Cuando se crea un problem type ocurre lo mismo a diferencia de que estas funciones ya se encuentran definidas por GiD y listas para editarse.
 
-La guía del uso de estas funciones se encuentran en el \textit{Customization Manual} contenido en la referencia de este documento, pero aquí se mencionan solo dos:
+La guía del uso de estas funciones se encuentran en el \textit{Customization Manual} contenido en la referencia de este documento, pero aquí se mencionan solo dos, el evento \textcolor{blue}{\texttt{InitGIDProject}} y \textcolor{blue}{\texttt{SaveGIDProject}}:
 
 \lstset{language=tcl} 
 \begin{lstlisting}[caption={Evento que se ejecuta al iniciar el problemtype.}]
@@ -529,7 +531,7 @@ proc InitGIDProject { dir } {
 }
 \end{lstlisting}
 
-\textit{Descripción}: Será llamada cuando se seleccione el problem type. Recibe el argumento \texttt{dir}, el cual es la ruta absoluta del directorio del problem type. Puede ser útil guardar \texttt{dir} para posteriormente  acceder a otros archivos dentro del directorio.
+\textit{Descripción}: Será llamada cuando se seleccione el problem type. Recibe el argumento \texttt{dir}, el cual es la ruta absoluta del directorio del problem type. Es muy útil guardar \texttt{dir} para posteriormente  acceder a otros archivos dentro del directorio como lo haremos más adelante.
 
 \begin{lstlisting}[caption={Evento que se ejecuta al guardar un proyecto en GiD durante la ejecución de un problem type.}]
 proc SaveGIDProject { filespd } {
@@ -553,7 +555,7 @@ La instrucción \textbf{GiD\_Process} es una función de TCL usado para ejecutar
 Se puede obtener los comandos exactos que GiD necesita de dos maneras:
 
 \begin{enumerate}
-	\item activando el menú ``\textbf{Right buttons}'' (\textit{Utilities}>\textit{Tools}>\textit{Toolbars}>Marcar \textit{Inside} en \textit{Right buttons}).	
+	\item Activando el menú ``\textbf{Right buttons}'' (\textit{Utilities}>\textit{Tools}>\textit{Toolbars}>Marcar \textit{Inside} en \textit{Right buttons}).	
 	\begin{figure}[hbtp!]
 	\centering
 	\includegraphics[scale=.8]{rightbuttons.PNG}
@@ -572,12 +574,18 @@ Se puede obtener los comandos exactos que GiD necesita de dos maneras:
 \end{figure}
 	
 \end{enumerate}
+\newpage
+Es común utilizar la instrucción \textbf{Mescape} seguido de usar \textbf{GiD\_Process}, este comando es un múltiple comando ``escape'' para así garantizar salir de cualquier menú. Por lo tanto para el ejemplo de la Figura~\ref{fig:undo} dibujar la misma línea en TCL se haría de la siguiente manera:
 
-Es común utilizar la instrucción \textbf{Mescape} seguido de usar \textbf{GiD\_Process}, este comando es un múltiple comando ``escape'' para así garantizar salir de cualquier menú.
+\lstset{language=tcl} 
+\begin{lstlisting}[caption={Dibujar una línea en código en código.}]
+GiD_Process Mescape Geometry Create Line 0.0,0.0 10.0,10.0 escape
+\end{lstlisting}
+
 
 \subsubsection{Programación en TCL}
 
-Una vez seleccionadas las funciones que han de ejecutar, se deben escribir las funciones en TCL. Para ello se debe crear primero un \texttt{namespace}. Un \texttt{namespace} es un área de trabajo que permite particionar diferentes comandos y variables de otras áreas de trabajo. Esto será útil para separar las funciones que nosotros hemos de crear con las que ya están definidas por GiD y evitar la \textit{colisión de nombres}. Una vez creada el área de trabajo, podremos almacenar en esta todas nuestras variables y funciones propias del \texttt{namespace}.
+En esta sección se hablará de TCL, las funciones \texttt{namespace}. Un \texttt{namespace} es un área de trabajo que permite particionar diferentes comandos y variables de otras áreas de trabajo. Esto será útil para separar las funciones que nosotros hemos de crear con las que ya están definidas por GiD y evitar la \textit{colisión de nombres}. Una vez creada el área de trabajo, podremos almacenar en esta todas nuestras variables y funciones propias del \texttt{namespace}.
 
 Para crear un \texttt{namespace} se utiliza el siguiente comando:
 
@@ -612,29 +620,31 @@ proc EjemploPT::CalcularAreaCirculo { } {
 
 \subsubsection{Parser: Manipular XML desde TCL}
 
-Hasta ahora sabemos cómo crear los métodos de entrada en el problem type (etiquetasm \texttt{<containter>}, \texttt{<value>}, etc.), sin embargo no hemos visto cómo acceder a ellas. Para ello se utiliza una herramienta común entre muchos lenguajes de programación llamada \textbf{Parser}.
+Hasta ahora sabemos cómo crear los métodos de entrada en el problem type (etiquetas \texttt{<containter>}, \texttt{<value>}, etc.) pero no hemos visto cómo acceder a ellas. Para ello se utiliza una herramienta común entre muchos lenguajes de programación llamada \textbf{Parser}.
 
-Un \textbf{analizador sintáctico} (o \textit{parser} en inglés) es un programa informático que analiza una cadena de símbolos llamada \textit{XPath} de acuerdo a las reglas de una gramática formal. Usualmente hace parte de un compilador, en cuyo caso, transforma una entrada en un árbol sintáctico de derivación. El analizador sintáctico de TCL se llama \texttt{tdom}.
+Un \textbf{analizador sintáctico} (o \textit{parser} en inglés) es un programa informático que analiza una cadena de símbolos llamada \textit{XPath} de acuerdo a las reglas de una gramática formal. Usualmente hace parte de un compilador, en cuyo caso transforma una entrada en un árbol sintáctico de derivación. El \textbf{analizador sintáctico de TCL} se llama \textbf{tdom}.
 
-Estos símbolos son las referencias a los elementos de un archivo XML, con los cuales podremos manipular los elementos visuales producto de las etiquetas \texttt{<containter>}, \texttt{<value>}, etc. La convención de estas referencias se llama \textbf{Modelo de Objetos del Documento}, \textbf{DOM} (\textit{Document Object Model} en inglés). El DOM es esencialmente una convención que proporciona un estándar de objetos para representar documentos HTML, XHTML y XML.
+Estos símbolos son las referencias a los elementos de un archivo XML con los cuales podremos manipular los elementos visuales, producto de las etiquetas \texttt{<containter>}, \texttt{<value>}, etc. La convención de estas referencias se llama \textbf{Modelo de Objetos del Documento}, \textbf{DOM} (\textit{Document Object Model} en inglés). El DOM es esencialmente una convención que proporciona un estándar de objetos para representar documentos HTML, XHTML y XML.
 
 A manera de resumen, los pasos para leer y/o modificar el archivo XML (\texttt{EjemploPT\_default.spd}) desde TCL son los siguientes:
 
 \begin{enumerate}
 	\item Obtener el parser para TCL. Esto se hace escribiendo la rutina:
 	\begin{lstlisting}[caption={Instrucción para obtener el parser para TCL.}]
-	package require tdom; # Maneja las direcciones de los XML
+	package require tdom; # Maneja el DOM
 	\end{lstlisting}
 	\item Obtener el elemento principal del archivo XML (en nuestro caso es el elemento \texttt{<EjemploPT\_data>}, el cual es la \textbf{raíz} (root) del las etiquetas) mediante DOM.
 	\item Acceder mediante una ruta XPath a elemento de esa raíz (\texttt{<containter>}, \texttt{<value>}, etc). La gramática del XPath es muy sencilla por lo que no se cubrirá en este material. La referencia oficial de Xpath se encuentra en \textcolor{BlueGiD}{\underline{\url{www.w3schools.com/xml/xpath_intro.asp}}}.
-	\item Una vez que seleccionado el elemento, se accede su valor o atributo.
+	\item Una vez seleccionado el elemento, se accede a su valor o atributo.
 \end{enumerate}
 
-Para el ejemplo de la Sección~\ref{sec:calculararea} se muestra una modificación a la función \textcolor{blue}{\texttt{CalcularArea}} (invocada desde el árbol de datos con la etiqueta \texttt{<proc>}) en la que se recupera el valor de la \texttt{base} y \texttt{altura} desde \texttt{<value>} y el resultado se imprime en otro \texttt{<value>}.
+Para el ejemplo de la Sección~\ref{sec:calculararea} se muestra una modificación a la función \textcolor{blue}{\texttt{CalcularArea}} (invocada desde el árbol de datos con la etiqueta \texttt{<proc>}) en la que se recupera el valor de la \texttt{base} y \texttt{altura} desde \texttt{<value>} y el resultado se imprime en otro \texttt{<value>} (Nótese que se incluyen los argumentos \textcolor{blue}{\texttt{domNode args}}):
+
+\newpage
 
 \lstset{language=tcl} 
 \begin{lstlisting}[caption={Cálculo del área obteniendo los valores desde el archivo \texttt{.spd} usando las funciones de \texttt{CustomLib}.}]
-proc CalcularArea { } {
+proc CalcularArea { domNode args } {
 	set rootXML [customlib::GetBaseRoot]
 	set base [get_domnode_attribute [$rootXML selectNodes "\container\[@n='caja'\]/value\[@n='base'\]"] v]
 	set altura [get_domnode_attribute [$rootXML selectNodes "\container\[@n='caja'\]/value\[@n='altura'\]"] v]
@@ -642,11 +652,11 @@ proc CalcularArea { } {
 }
 \end{lstlisting} 
 
-\textbf{customlib::GetBaseRoot}: Es una rutina incluída en \textit{CustomLib} para obtener fácilmente la raíz de un documento XML que por defecto es \texttt{EjemploPT\_default.spd}. Por lo que la raíz será \texttt{<EjemploPT\_data>}\\
+\textbf{customlib::GetBaseRoot}: Es una rutina incluída en \textit{CustomLib} para obtener fácilmente la raíz de un documento XML que por defecto es \texttt{EjemploPT\_default.spd}. Por lo que la raíz será \texttt{<EjemploPT\_data>}.\\
 \textbf{\textit{raiz} selectNodes \textit{xpath}}: Donde \textbf{selectNodes} es una instrucción propia del parser (tdom) para seleccionar un nodo de \textit{raiz} mediante una \textit{xpath}. \textit{root} puede ser también un nodo que contenga a otros.\\
 \textbf{get\_domnode\_attribute \textit{nodo} \textit{atributo}}: Función  de \textit{CustomLib} para obtener un \textit{atributo} especificado de un \textit{nodo}. En este caso se obtiene el atributo ``\texttt{\textbf{v}}'' que equivale a 5.00.
 
-Los conceptos vistos en esta sección se aplicarán en la sección siguiente.
+Los conceptos vistos se aplicarán en el ejemplo de este material.
 
 \section{Problem type: EjemploPT.gid}
 
@@ -659,8 +669,7 @@ Se pretende crear un problem type en el que se pueda \textbf{dibujar la geometr�
 % REFERENCIA DE LAS MEDIDAS
 \begin{figure}[hbt!]
 	\centering
-	\includegraphics[width=0.5\textwidth]{sectrans_trabes.PNG}
-	
+	\includegraphics[width=0.48\textwidth]{sectrans_trabes.PNG}
 	\caption{Sección transversal de trabes AASHTO.\label{fig:sectrans_trabes}}
 \end{figure}
 
@@ -693,25 +702,25 @@ Con sus respectivas medidas descritas en el Cuadro~\ref{tab:medidasAASHTO}.
 \subsection{Estructura de \texttt{EjemploPT.gid}}
 Lo que se necesita plantear inicialmente es la estructura del árbol de datos. Esta podría sintetizarse en la Figura~\ref{fig:estructura_spd}.
 
-\begin{figure}[hbt!]
+\begin{figure}[hbtp!]
 	\centering
 	\includegraphics[width=0.45\textwidth]{estructura_spd.PNG}
 	\caption{Estructura del archivo SPD de \texttt{EjemploPT.gid}.\label{fig:estructura_spd}}
 \end{figure}
 
-Esta expone que a partir de la etiqueta/raíz del problem type \texttt{$<$EjemploPT\_data$>$} se crea un \texttt{$<$container$>$} que almacene un cuadro de valores \texttt{$<$value$>$}, este mostrará una lista desplegable con los valores ``Trabe tipo I'', ``Trabe tipo II'', etc., las propiedades geométricas serán almancenadas en las etiquetas \texttt{$<$blockdata$>$}, mismas que fungirán como \textit{base de datos} del problem type.
+A partir de la etiqueta/raíz del problem type \texttt{$<$EjemploPT\_data$>$} se crea un contenedor (\texttt{$<$container$>$}) que muestre un cuadro de valores (etiqueta \texttt{$<$value$>$}), este desplegará una lista con las etiquetas ``Tipo I'', ``Tipo II'', etc. Las propiedades geométricas de dichos secciones serán agrupadas (uso de \texttt{$<$blockdata$>$}), mismas que fungirán como \textit{base de datos} del problem type.
 
 \subsection{Pasos a seguir}
 
-Organizando las consideraciones generales, tenemos los siguientes pasos a seguir:
+Organizando las consideraciones generales tenemos los pasos:
 
 \begin{enumerate}
 	\item Definir los datos de información del problem type en el archivo \texttt{.xml} (Reutilizado de la Sección~\ref{sec:codigoXML}).
 	\item Escribir en el archivo \texttt{.spd} la estructura del árbol de datos tal y como se muestra en la Figura~\ref{fig:estructura_spd}.
 	\item Escribir las rutinas necesarias en el archivo \texttt{.tcl} para cargar el \textit{árbol de datos} e inicializar el \texttt{namespace} del problem type.
-	\item Crear el catálogo de \texttt{blockdata} que guarde las propiedades geométricas de las trabes (del Cuadro~\ref{tab:medidasAASHTO}) en un archivo XML (ver Anexo~\ref{app:catalogo}). Se puede guardar en al mismo archivo \texttt{.spd} pero aquí lo haré en un archivo separado para mantener una buena práctica de programación.
+	\item Crear el catálogo de \texttt{blockdata} que guarde las propiedades geométricas de las trabes (del Cuadro~\ref{tab:medidasAASHTO}) en un archivo XML (ver Anexo~\ref{app:catalogo}). Se puede guardar en el mismo archivo \texttt{.spd} pero aquí lo haré en un archivo separado para mantener una buena práctica de programación.
 	\item Hacer una función en TCL que devuelva la lista de los tipos de trabes y vincularla al archivo \texttt{.spd} mediante las etiquetas \texttt{$<$procs$>$}.
-	\item Programar un procedimiento en el archivo \texttt{.tcl} que, mediante el tipo de trabe seleccionado en el punto anterior, busque y obtenga las propiedades geométricas almacenadas en el \texttt{blockdata} y las guarde variables globales.
+	\item Programar un procedimiento en el archivo \texttt{.tcl} que mediante el tipo de trabe seleccionado en el punto anterior, busque y obtenga las propiedades geométricas almacenadas en el \texttt{blockdata} y las guarde variables.
 	\item Una vez almacenadas los datos de la geometría, programar el procedimiento en el archivo \texttt{.tcl} para dibujar las trabes de forma paramétrica.
 \end{enumerate}
 
@@ -719,7 +728,7 @@ Organizando las consideraciones generales, tenemos los siguientes pasos a seguir
 
 \subsubsection{Archivo \texttt{.spd}}
 
-Una vez escrito el archivo de datos de información del problem type (\texttt{.xml}), escribimos en el archivo \texttt{.spd} en blanco las siguientes líneas de código. El contenido \texttt{CDATA} contiene la llamada de una función que crearemos más adelante llamada \textcolor{blue}{\texttt{EjemploPT::ListaTrabes}}.
+Escrito el archivo de datos de información del problem type (\texttt{.xml}) se escribe en el archivo \texttt{.spd} en blanco las siguientes líneas de código. El contenido \texttt{CDATA} contiene la llamada de una función que crearemos más adelante llamada \textcolor{blue}{\texttt{EjemploPT::ListaTrabes}}.
 
 \lstset{language=XML} 
 \begin{lstlisting}
@@ -743,17 +752,13 @@ Esto creará una estructura como se deseaba en el la Figura~\ref{fig:estructura_
 
 \subsubsection{Archivo \texttt{.tcl}}
 
-Hasta el momento hemos visto cómo crea un \textit{Data tree} (o árbol de datos), pero al cargar nuestro problem type (\texttt{Data$>$Problem type$>$}\textit{Seleccionar problem type de la lista}), la opción para abrirlo no se encuentra por ninguna parte. Esto es porque no hemos escrito nada en el archivo \texttt{.tcl} ni mucho menos \textbf{le hemos especificado al programa que lo abra}. Como se mencionó en secciones previas, el archivo de TCL será aquel que le otorgue la lógica a nuestro programa. Por lo tanto la primera rutina que programaremos será la de abrir el \textit{árbol de datos} inmediatamente cuando carguemos el problem type en GiD, para ello utilizaremos el recurso \texttt{InitGIDProject} visto en la Sección~\ref{sec:eventosGiD}.
-
-Siguiendo los pasos que se detallan en la Sección~\ref{sec:consideraciones}, lo que tenemos que hacer es crear un \texttt{namespace} para el problem type, almacenar las variables globales (\texttt{D} y \texttt{B}) que definen la geometría de las trabes e invocar la rutina para abrir el \textit{árbol de datos}. También se \textbf{creará un submenú} para ejecutar el dibujo paramétrico. Y por último una serie de rutinas para almacenar la dirección absoluta del problem type (se utilizará después).
+Hasta el momento hemos visto cómo crea un \textit{Data tree} (o árbol de datos), pero al cargar nuestro problem type (\texttt{Data$>$Problem type$>$}\textit{Seleccionar problem type de la lista}) la opción para abrirlo no se encuentra por ninguna parte. Esto es porque no hemos escrito nada en el archivo \texttt{.tcl} ni mucho menos \textbf{le hemos especificado al programa que lo abra}. Siguiendo los pasos de la Sección~\ref{sec:consideraciones} se detalla el código las funciones:
 
 \lstset{language=tcl} 
 \begin{lstlisting}[caption={Código para inicializar el proyecto y crear el menú.}]
 # Proyecto EjemploPT.gid
 
 namespace eval EjemploPT {
-	variable D
-	variable B
 	variable ptDir
 }
 proc InitGIDProject { dir } {
@@ -769,6 +774,14 @@ proc EjemploPT::ObtenerDirPT { } {
 	variable ptDir
 	return $ptDir
 }
+proc EjemploPT::BorrarDibujos { } {
+	
+	GidUtils::DisableGraphics
+	foreach type { volume surface line point } {
+		GiD_Geometry delete $type 1:end
+	} 
+	GidUtils::EnableGraphics
+}
 proc EjemploPT::ModificarMenus { } {
 	GiDMenu::InsertOption "Data" [list "Mostrar data tree"] 0 PRE [list gid_groups_conds::open_conditions menu] "" "" replace =
 	GiDMenu::InsertOption "Data" [list "Dibujar trabes"] 1 PRE [list EjemploPT::DibujarTrabe] "" "" replace =
@@ -776,28 +789,37 @@ proc EjemploPT::ModificarMenus { } {
 }
 \end{lstlisting}
 
+\begin{itemize}
+	\item \textcolor{blue}{\texttt{namespace eval EjemploPT}}: Crea el namespace y aloja espacio para la variable global de la dirección del problem type.
+	\item \textcolor{blue}{\texttt{InitGIDProject}}: Evento que se ejecuta al abrir el problem type.
+	\item \textcolor{blue}{\texttt{EjemploPT::ModificarMenus}}: Crea un \textbf{submenú} para ejecutar el dibujo paramétrico.
+	\item \textcolor{blue}{\texttt{EjemploPT::GuardarDirPT}}: Almacena la dirección que \textcolor{blue}{\texttt{InitGIDProject}} le pasa como argumento.
+	\item \textcolor{blue}{\texttt{proc EjemploPT::ObtenerDirPT}}: Regresa la dirección.
+	\item \textcolor{blue}{\texttt{EjemploPT::BorrarDibujos}}: Borra todos las entidades (puntos, líneas, superficies y volúmenes) del dibujo. 
+	\item \textcolor{blue}{\texttt{gid\_groups\_conds::open\_conditions menu}}: Abre el árbol de datos.	
+\end{itemize}
+
 Las siguientes instrucciones:
 \begin{enumerate}
-	\item \textcolor{blue}{\texttt{gid\_groups\_conds::open\_conditions menu}}
 	\item \textcolor{blue}{\texttt{GiDMenu::InsertOption}}
 	\item \textcolor{blue}{\texttt{GiDMenu::UpdateMenus}}
 \end{enumerate}
 
-Son rutinas definidas en GiD (consultar sección \textit{8.6 Managing menus} del \textit{Customization Manual}). La primera sirve para leer el archivo \texttt{EjemploPT\_default.spd} y crear una ventana gráfica con los datos leídos, esto es lo que se muestra en el Data Tree. La segunda sirve para agregar submenús en el menú \textit{Data} de GiD, en este caso se agregó un submenú para abrir el \textit{árbol de datos} y otro submenú para dibujar (se define la función \textcolor{blue}{\texttt{EjemploPT::DibujarTrabe}} más adelante). La tercera, para actualizar los cambios realizados. Si guardamos los cambios en el archivo y ejecutamos el problem type, se abrirá esta ventana:
+Son rutinas definidas en GiD (consultar sección \textit{8.6 Managing menus} del \textit{Customization Manual}). La primera sirve para agregar submenús en el menú \textit{Data} de GiD, en este caso se agregó un submenú para abrir el \textit{árbol de datos} y otro submenú para dibujar (función \textcolor{blue}{\texttt{EjemploPT::DibujarTrabe}} más adelante). La segunda, para actualizar los cambios realizados. Si guardamos los cambios en el archivo y ejecutamos el problem type, se abrirá esta ventana:
 
 \begin{figure}[hbtp!]\centering
 	\includegraphics[width=0.2\textwidth]{captura_data_tree.PNG}
 	\caption{Estructura del archivo \texttt{.spd} vista en el árbol de datos de GiD.\label{fig:captura_data_tree}}
 \end{figure}
 
-Si se ha mostrado la figura anterior, todo se ha cargado con éxito. Pero si se intenta abrir, se generará un error como el que sigue:
+Si se ha mostrado la figura anterior, todo se ha cargado con éxito. Pero al seleccionar el submenú ``Dibujar trabes'' se generará un error como el que sigue:
 
 \begin{figure}[hbt!]\centering
 	\includegraphics[width=0.35\textwidth]{error_ListaTrabes.PNG}
 	\caption{Error cuando GiD no encuentra definida una función.\label{fig:error_ListaTrabes}}
 \end{figure}
 
-Esto ocurre cuando GiD invoca a una función que no está definida en el archivo TCL. El siguiente paso es definir la función y sus componentes. Uno de los atributos de la etiqueta \texttt{$<$value$>$} es ``\texttt{values}'' (Sección~\ref{subsubsec:value}) en la cual transforma el campo de \texttt{value} en lista desplegable si se entrega una cadena de caracteres separados por comas. Entonces la función \textcolor{blue}{\texttt{ListaTrabes}} deberá regresar una lista y se define como sigue (se deberá escribir después de \texttt{InitGIDProject}
+Esto ocurre cuando GiD invoca a una función que no está definida en el archivo TCL. El siguiente paso es definir la función y sus componentes. Uno de los atributos de la etiqueta \texttt{$<$value$>$} es ``\texttt{values}'' (Sección~\ref{subsubsec:value}) la cual transforma el campo de \texttt{value} en lista desplegable si se entrega una cadena de caracteres separados por comas. Entonces la función \textcolor{blue}{\texttt{ListaTrabes}} deberá regresar una lista (se deberá escribir después de \texttt{InitGIDProject}
 
 \lstset{language=tcl} 
 \begin{lstlisting}
@@ -835,25 +857,24 @@ Ahora se necesita crear la base de datos de las trabes, para ello se crear una c
 
 Continuando con la escritura del archivo \texttt{.tcl}. Se deben hacer dos cosas:
 
-\begin{itemize}
+\begin{enumerate}
 	\item Obtener el valor del tipo de trabe que seleccione el usuario desde el archivo \texttt{EjemploPT\_default.spd}.
 	\item Comparar ese valor con la etiqueta \textcolor{blue}{\texttt{name=}} coincidente de la base de datos y almacenar los datos.
-\end{itemize}
+\end{enumerate}
 
-La obtención se hace con el paquete \textbf{tdom}, que es un \textit{parser} (\textit{analizador sintáctico}) para XML en TCL, con su respectiva ruta \textbf{XPath}, descritos en secciones posteriores. El paquete se incluirá al principio del código:
+La obtención se lleva a cabo usando el paquete \textbf{tdom} al principio del código:
 
 \lstset{language=tcl} 
 \begin{lstlisting}[caption={Código para inicializar el proyecto y crear el menú.}]
 # Proyecto EjemploPT.gid
 package require tdom; # Maneja el doc. XML
 namespace eval EjemploPT {
-	variable D
-	variable B
+	variable ptDir
 }
 ...
 \end{lstlisting}
 
-Se define la función \textcolor{blue}{\texttt{EjemploPT::DibujarTrabe}} tomando en cuenta el uso se las \textit{listas} de TCl, el dibujo de geometrías mediante línea de código usando \textbf{GiD\_Process} visto en la Sección~\ref{sec:GiDProcess} y la manipulación de un archivo XML interno (\texttt{EjemploPT\_default.spd}) y externo (\texttt{basedatostrabes.xml}) donde para este último se hace uso de las funciones del parser \textit{tdom} y no de las funciones de \textit{CustomLib}.
+Se escribe la función \textcolor{blue}{\texttt{EjemploPT::DibujarTrabe}} tomando en cuenta el uso se las \textit{listas} de TCl, el dibujo de geometrías mediante línea de código usando \textbf{GiD\_Process} (visto en la Sección~\ref{sec:GiDProcess}) y la manipulación de un archivo XML interno (\texttt{EjemploPT\_default.spd}) y externo (\texttt{basedatostrabes.xml}) donde para este último se hace uso de las funciones del parser \textit{tdom} y no de las funciones de \textit{CustomLib}.
 
 Se tiene que resaltar que la instrucción:
 
@@ -871,15 +892,15 @@ hace lo mismo que:
 
 Sin embargo la primera lee un archivo externo, la explicación es la siguiente: \textcolor{blue}{\texttt{dom parse}} crea un DOM (document object model) de un archivo como argumento, \textcolor{blue}{\texttt{tDOM::xmlReadFile}} lee un archivo XMl dada una dirección absoluta, misma que se obtiene al unir (\textcolor{blue}{\texttt{file join}}) la dirección del problem type (\textcolor{blue}{\texttt{EjemploPT::ObtenerDirPT}}) con la dirección donde colocamos \texttt{basedatostrabes.xml}.
 
+\subsubsection{Código de \texttt{EjemploPT::DibujarTrabe}}
 \lstset{language=tcl} 
 \begin{lstlisting}[caption={Definición del procedimiento \texttt{EjemploPT::DibujarTrabe}}]
 proc EjemploPT::DibujarTrabe { } {
 	
-	variable D
-	variable B
-	set D [list ]
-	set B [list ]
-	set long 500.00
+	EjemploPT::BorrarDibujos
+	set long 1000.00; # Longitud
+	set factor 2.54; # Pulg. a cm.
+	set sep 50.0; # Sep. entre trabes
 	
 	set rootSPD [customlib::GetBaseRoot]
 	set tipoTrabe [get_domnode_attribute [$rootSPD selectNodes "\container\[@n='tipoTrabe'\]/value\[@n='tipo'\]"] v]
@@ -895,53 +916,69 @@ proc EjemploPT::DibujarTrabe { } {
 		}
 	}
 	
-	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d1'\]"] v]]
-	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d2'\]"] v]]
-	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d3'\]"] v]]
-	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d4'\]"] v]]
-	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d5'\]"] v]]
-	set D [lappend D [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d6'\]"] v]]
-	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b1'\]"] v]]
-	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b2'\]"] v]]
-	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b3'\]"] v]]
-	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b4'\]"] v]]
-	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b5'\]"] v]]
-	set B [lappend B [get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b6'\]"] v]]
+	# Dimension D
+	set d1 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d1'\]"] v]]
+	set d2 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d2'\]"] v]]
+	set d3 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d3'\]"] v]]
+	set d4 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d5'\]"] v]]
+	set d5 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d4'\]"] v]]
+	set d6 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='d6'\]"] v]]
+	# Dimension B
+	set b1 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b1'\]"] v]]
+	set b2 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b2'\]"] v]]
+	set b3 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b3'\]"] v]]
+	set b4 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b4'\]"] v]]
+	set b5 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b5'\]"] v]]
+	set b6 [expr $factor*[get_domnode_attribute [$nodoTipo selectNodes "value\[@n='b6'\]"] v]]
 	
 	GidUtils::DisableGraphics
-	GiD_Process Mescape Geometry Create Line 0.0,0.0 \
-											[expr [lindex $B 0]/2.0],0.0 \
-											[expr [lindex $B 0]/2.0],[expr -[lindex $D 1]] \
-											[expr [lindex $B 2]/2.0],[expr -[lindex $D 1]-[lindex $D 3]] \
-											[expr [lindex $B 2]/2.0],[expr -[lindex $D 0]+[lindex $D 4]+[lindex $D 5]] \
-											[expr [lindex $B 1]/2.0],[expr -[lindex $D 0]+[lindex $D 4]] \
-											[expr [lindex $B 1]/2.0],[expr -[lindex $D 0]] \
-											0.0,[expr -[lindex $D 0]] escape
-	GiD_Process Mescape Utilities Copy Lines MaintainLayers Mirror FNoJoin 0.0,0.0,0.0 FNoJoin 0.0,1.0,0.0 TwoDim 1 2 3 4 5 6 7 escape
-	GiD_Process Mescape Geometry Create NurbsSurface 1 2 3 4 5 6 7 8 9 10 11 12 13 14 escape
-	GiD_Process Mescape Utilities Copy Surfaces DoExtrude Volumes MaintainLayers Translation FJoin 1 FNoJoin 0.0,0.0,-500 1 escape
-	GiD_Process Mescape Utilities Copy Volumes MaintainLayers MCopy 5 Translation FJoin 1 FNoJoin 60.0,0.0,0.0 1 escape
+	if { $tipoTrabe!="Tipo V" || $tipoTrabe!="Tipo V" } {
+		GiD_Process Mescape Geometry Create Line 0.0,0.0 \
+			[expr $b1/2.0],0.0 \
+			[expr $b1/2.0],[expr -$d2] \
+			[expr $b3/2.0],[expr -$d2-$d4] \
+			[expr $b3/2.0],[expr -$d1+$d5+$d6] \
+			[expr $b2/2.0],[expr -$d1+$d6] \
+			[expr $b2/2.0],[expr -$d1] \
+			0.0,[expr -$d1] escape
+		GiD_Process Mescape Utilities Copy Lines MaintainLayers Mirror FNoJoin 0.0,0.0,0.0 FNoJoin 0.0,1.0,0.0 TwoDim 1:7 escape
+		GiD_Process Mescape Geometry Create NurbsSurface 1:14 escape
+	} else {
+		GiD_Process Mescape Geometry Create Line 0.0,0.0 \
+			[expr $b1/2.0],0.0 \
+			[expr $b1/2.0],[expr -$d2] \
+			[expr $b1/2.0-$b5],[expr -$d2-$d3] \
+			[expr $b3/2.0],[expr -$d2-$d3-$d4] \
+			[expr $b3/2.0],[expr -$d1+$d5+$d6] \
+			[expr $b2/2.0],[expr -$d1+$d6] \
+			[expr $b2/2.0],[expr -$d1] \
+			0.0,[expr -$d1] escape
+		GiD_Process Mescape Utilities Copy Lines MaintainLayers Mirror FNoJoin 0.0,0.0,0.0 FNoJoin 0.0,1.0,0.0 TwoDim 1:8 escape
+		GiD_Process Mescape Geometry Create NurbsSurface 1:16 escape
+	}
+	GiD_Process Mescape Utilities Copy Surfaces DoExtrude Volumes MaintainLayers Translation FJoin 1 FNoJoin 0.0,0.0,[expr -$long] 1 escape
+	GiD_Process Mescape Utilities Copy Volumes MaintainLayers MCopy 5 Translation FJoin 1 FNoJoin [expr $b1+$sep],0.0,0.0 1 escape
 	GidUtils::EnableGraphics
+	GiD_Process Mescape
+	GiD_Process Mescape 'Rotate Angle 270 90
+	GiD_Process Mescape 'Zoom Frame
 }
 \end{lstlisting}
 
 \subsection{Resultado}
 
-Una vez guardados los cambios y ejecutar el problem type. Abrir el árbol de datos (\textit{Data}>\textit{Mostrar data tree} o también como se definió en \texttt{InitGIDProject} el árbol se abrirá automáticamente al iniciar) se selecciona un tipo de trabe y seleccionar el submenú \textit{Dibujar trabes} que ejecutará \textcolor{blue}{\texttt{EjemploPT::DibujarTrabe}}. El resultado debe ser el siguiente:
+Guardados los cambios se ejecuta el problem type. Para ver el resultado se abre el árbol de datos (\textit{Data}>\textit{Mostrar data tree}, o también abrirá automáticamente al cargar el problem type) y selecciona un tipo de trabe de la lista desplegable. Luego ejecutar el submenú \textit{Dibujar trabes} (\textcolor{blue}{\texttt{EjemploPT::DibujarTrabe}}). El resultado debe ser el siguiente:
 
 \begin{figure}[hbt!]\centering
 	\includegraphics[scale=.5]{trabes.PNG}
-	\caption{Resultado de \textcolor{blue}{\texttt{EjemploPT::DibujarTrabe}} con una trabe AASHTO Tipo I.\label{fig:resultadotrabes}}
+	\caption{Resultado de \textcolor{blue}{\texttt{EjemploPT::DibujarTrabe}} con una sección AASHTO Tipo V.\label{fig:resultadotrabes}}
 \end{figure}
-
-Se debe tomar en cuenta que este programa solo funcionará para trabes AASHTO Tipo I a Tipo IV, ya que como se observa, no se han implementado las condiciones geométricas para las demás. Además al cambiara a trabes más grandes que AASHTO I, la separación debe cambiarse, de lo contrario los volúmenes se empalman.
-
 
 %----------------------------------------------------------------------------------------
 %	APPENDIX
 %----------------------------------------------------------------------------------------
 
-
+\newpage
 \appendix
 
 \section{Anexo I: Catálogo de trabes \texttt{basedatostrabes.xml}} \label{app:catalogo}
@@ -1056,11 +1093,13 @@ Wikipedia.
 \textit{CDATA}.
 Wikipedia, Creative Commons.
 
+\bibitem{xml}
+``¿Qué es XML?'', Página web. \textit{http://www.mundolinux.info/que-es-xml.htm}.
+Mundo Linux.
+
 
 
 \end{thebibliography}
 
-
-%----------------------------------------------------------------------------------------
 
 \end{document}
